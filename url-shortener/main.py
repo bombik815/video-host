@@ -2,24 +2,12 @@ from typing import Annotated
 
 from fastapi import FastAPI, Request, HTTPException, status, Depends
 
+from api import router as api_router
+from api.redirect_views import router as redirect_views
 
-from schemas.short_url import ShortUrl
 from schemas.movie import Movie
-from fastapi.responses import RedirectResponse
-
 
 # Константы
-SHORT_URLS = [
-    ShortUrl(
-        target_url="https://example.com",
-        slug="example",
-    ),
-    ShortUrl(
-        target_url="https://google.com",
-        slug="search",
-    ),
-]
-
 # Список фильмов
 MOVIES = [
     Movie(
@@ -47,6 +35,9 @@ app = FastAPI(
     description="URL Shortener",
 )
 
+app.include_router(redirect_views)
+app.include_router(api_router)
+
 
 @app.get("/")
 async def read_root(
@@ -70,85 +61,6 @@ async def read_root(
         "docs": str(docs_url),
         "redoc": str(redoc_url),
     }
-
-
-@app.get(
-    "/short-urls/",
-    response_model=list[ShortUrl],
-)
-def read_short_urls_list():
-    return SHORT_URLS
-
-
-"""
-Извлекает объект ShortUrl из списка SHORT_URLS по его slug.
-
-Вызывает ошибку 404, если slug не найден.
-
-Параметры:
-    slug (str): идентификатор (slug) искомого ShortUrl
-
-Возвращает:
-    ShortUrl: найденный объект ShortUrl
-"""
-
-
-def prefetch_short_urls(slug: str) -> ShortUrl:
-
-    url: ShortUrl | None = next(
-        (url for url in SHORT_URLS if url.slug == slug),
-        None,
-    )
-    if url:
-        return url
-
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"URL {slug!r} not found",
-    )
-
-
-@app.get("/r/{slug}")
-@app.get("/r/{slug}/")
-def redirect_short_url(
-    url: Annotated[
-        ShortUrl,
-        Depends(prefetch_short_urls),
-    ],
-):
-    return RedirectResponse(url=url.target_url)
-
-
-"""
-Возвращает подробную информацию о сокращенной ссылке
-
-Parameters:
-    slug (str): slug сокращенной ссылки
-
-Returns:
-    ShortUrl: объект сокращенной ссылки
-"""
-
-
-@app.get(
-    "/short-urls/{slug}/",
-    response_model=ShortUrl,
-)
-def read_short_url_details(
-    url: Annotated[
-        ShortUrl,
-        Depends(prefetch_short_urls),
-    ],
-) -> ShortUrl:
-    return url
-
-
-"""
-Возвращает список всех фильмов, хранящихся в системе
-
-Returns:
-    list[Movie]: список фильмов
-"""
 
 
 @app.get(
