@@ -11,4 +11,5 @@ class Movie(MovieBase):
     """
     Модель фильма
     """
-    id: int
+
+    # id: int
