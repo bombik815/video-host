@@ -4,7 +4,6 @@ from typing import Annotated
 
 from annotated_types import Len
 
-import status
 from fastapi import (
     Depends,
     APIRouter,
