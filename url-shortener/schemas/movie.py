@@ -1,10 +1,9 @@
 import datetime
-import random
 from typing import Annotated
 
 from annotated_types import Len
 from fastapi import Form
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class MovieBase(BaseModel):
@@ -21,6 +20,7 @@ class MovieCreate(MovieBase):
     title: Annotated[str, Len(min_length=3, max_length=100)]
     description: Annotated[str, Len(min_length=3, max_length=100)]
     year: Annotated[int, Form(min_value=1900, max_value=datetime.date.today().year)]
+    slug: str
 
 
 class Movie(MovieBase):
@@ -28,4 +28,4 @@ class Movie(MovieBase):
     Модель фильма
     """
 
-    id: int = Field(default_factory=lambda: random.randint(1_000_000, 9_999_999))
+    slug: str
