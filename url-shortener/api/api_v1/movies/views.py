@@ -1,19 +1,14 @@
-import datetime
-
 from typing import Annotated
-
-from annotated_types import Len
 
 from fastapi import (
     Depends,
     APIRouter,
     status,
-    Form,
 )
 
 from .crud import MOVIES
 from schemas.movie import Movie, MovieCreate
-from .dependencies import get_movie_by_id
+from .dependencies import get_movie_by_slug
 
 router = APIRouter(prefix="/movies", tags=["Movies"])
 
@@ -40,10 +35,10 @@ def creat_movie(
 
 
 """
-Возвращает объект фильма по его ID
+Возвращает объект фильма по его slug
 
 Параметры:
-    movie_id (int): ID фильма
+    movie_slug (str): slug фильма
 
 Возвращает:
     Movie: объект фильма
@@ -53,6 +48,6 @@ def creat_movie(
 """
 
 
-@router.get("/{movie_id}", response_model=Movie)
-def get_movie(movie: Annotated[Movie, Depends(get_movie_by_id)]) -> Movie:
+@router.get("/{movie_slug}", response_model=Movie)
+def get_movie(movie: Annotated[Movie, Depends(get_movie_by_slug)]) -> Movie:
     return movie
