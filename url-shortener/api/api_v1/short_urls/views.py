@@ -1,20 +1,16 @@
 from typing import Annotated
 
-from annotated_types import Len
-
 from fastapi import (
     Depends,
     APIRouter,
     status,
-    Form,
 )
 
 
 from schemas.short_url import ShortUrl, ShortUrlCreate
 
 from .dependencies import prefetch_short_urls
-from .crud import SHORT_URLS
-
+from .crud import storage
 
 router = APIRouter(prefix="/short-urls", tags=["Short URLs"])
 
@@ -29,17 +25,26 @@ router = APIRouter(prefix="/short-urls", tags=["Short URLs"])
 
 
 @router.get("/", response_model=list[ShortUrl])
-def read_short_urls_list():
-    return SHORT_URLS
+def read_short_urls_list() -> list[ShortUrl]:
+    return storage.get()
+
+
+"""
+Создает новую сокращенную ссылку
+
+Параметры:
+    short_url_create (ShortUrlCreate): данные для создания сокращенной ссылки
+
+Возвращает:
+    ShortUrl: созданный объект сокращенной ссылки
+"""
 
 
 @router.post("/", response_model=ShortUrl, status_code=status.HTTP_201_CREATED)
 def create_short_url(
     short_url_create: ShortUrlCreate,
 ):
-    return ShortUrl(
-        **short_url_create.model_dump(),
-    )
+    return storage.create(short_url_create)
 
 
 """
