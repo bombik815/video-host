@@ -3,7 +3,7 @@ from starlette import status
 
 from schemas.short_url import ShortUrl
 
-from .crud import SHORT_URLS
+from .crud import storage
 
 
 """
@@ -22,10 +22,7 @@ Raises:
 
 def prefetch_short_urls(slug: str) -> ShortUrl:
 
-    url: ShortUrl | None = next(
-        (url for url in SHORT_URLS if url.slug == slug),
-        None,
-    )
+    url: ShortUrl | None = storage.get_by_slug(slug=slug)
     if url:
         return url
 
