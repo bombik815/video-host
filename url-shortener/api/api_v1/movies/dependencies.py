@@ -6,7 +6,7 @@ from schemas.movie import Movie
 
 
 """
-Возвращает объе��т фильма по его slug
+Возвращает объект фильма по его slug
 
 Параметры:
     movie_slug (str): slug фильма
