@@ -8,9 +8,9 @@ from fastapi import (
     status,
     Form,
 )
-from pydantic import AnyHttpUrl
 
-from schemas.short_url import ShortUrl
+
+from schemas.short_url import ShortUrl, ShortUrlCreate
 
 from .dependencies import prefetch_short_urls
 from .crud import SHORT_URLS
@@ -35,16 +35,10 @@ def read_short_urls_list():
 
 @router.post("/", response_model=ShortUrl, status_code=status.HTTP_201_CREATED)
 def create_short_url(
-    target_url: Annotated[AnyHttpUrl, Form()],
-    slug: Annotated[
-        str,
-        Len(min_length=3, max_length=10),
-        Form(),
-    ],
+    short_url_create: ShortUrlCreate,
 ):
     return ShortUrl(
-        target_url=target_url,
-        slug=slug,
+        **short_url_create.model_dump(),
     )
 
 
