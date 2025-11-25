@@ -12,7 +12,7 @@ from fastapi import (
 )
 
 from .crud import MOVIES
-from schemas.movie import Movie
+from schemas.movie import Movie, MovieCreate
 from .dependencies import get_movie_by_id
 
 router = APIRouter(prefix="/movies", tags=["Movies"])
@@ -34,11 +34,9 @@ def get_movies() -> list[Movie]:
 
 @router.post("/", response_model=Movie, status_code=status.HTTP_201_CREATED)
 def creat_movie(
-    title: Annotated[str, Form()],
-    description: Annotated[str, Len(min_length=3, max_length=100), Form()],
-    year: Annotated[int, Form(min_value=1900, max_value=datetime.date.today().year)],
+    movie_create: MovieCreate,
 ):
-    return Movie(title=title, description=description, year=year)
+    return Movie(**movie_create.model_dump())
 
 
 """
