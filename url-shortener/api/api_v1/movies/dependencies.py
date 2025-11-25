@@ -7,10 +7,10 @@ from schemas.movie import Movie
 
 
 """
-Возвращает объект фильма по его ID
+Возвращает объект фильма по его slug
 
 Параметры:
-    movie_id (int): ID фильма
+    movie_slug (str): slug фильма
 
 Возвращает:
     Movie: объект фильма
@@ -20,10 +20,10 @@ from schemas.movie import Movie
 """
 
 
-def get_movie_by_id(movie_id: int) -> Movie:
+def get_movie_by_slug(movie_slug: str) -> Movie:
 
     movie: Movie | None = next(
-        (movie for movie in MOVIES if movie.id == movie_id),
+        (movie for movie in MOVIES if movie.slug == movie_slug),
         None,
     )
     if movie:
@@ -31,5 +31,5 @@ def get_movie_by_id(movie_id: int) -> Movie:
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"Movie with ID {movie_id} not found",
+        detail=f"Movie with slug {movie_slug} not found",
     )
