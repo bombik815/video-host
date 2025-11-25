@@ -2,19 +2,19 @@ from schemas.movie import Movie
 
 MOVIES = [
     Movie(
-        id=1,
+        slug="godfather",
         title="Крестный отец",
         description="Криминальная драма о семье мафиози Корлеоне",
         year=1972,
     ),
     Movie(
-        id=2,
+        slug="shawshank-redemption",
         title="Побег из Шоушенка",
         description="Драма о несправедливо осужденном банкире",
         year=1994,
     ),
     Movie(
-        id=3,
+        slug="dark-knight",
         title="Темный рыцарь",
         description="Бэтмен сражается с Джокером",
         year=2008,
