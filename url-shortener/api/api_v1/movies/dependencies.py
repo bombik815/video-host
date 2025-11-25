@@ -1,13 +1,12 @@
-from fastapi import HTTPException
-from starlette import status
+from fastapi import HTTPException, status
 
-from .crud import MOVIES
+from .crud import storage
 
 from schemas.movie import Movie
 
 
 """
-Возвращает объект фильма по его slug
+Возвращает объе��т фильма по его slug
 
 Параметры:
     movie_slug (str): slug фильма
@@ -22,10 +21,7 @@ from schemas.movie import Movie
 
 def get_movie_by_slug(movie_slug: str) -> Movie:
 
-    movie: Movie | None = next(
-        (movie for movie in MOVIES if movie.slug == movie_slug),
-        None,
-    )
+    movie: Movie | None = storage.get_by_slug(movie_slug)
     if movie:
         return movie
 
