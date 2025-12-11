@@ -9,7 +9,7 @@ from starlette import status
 from api.api_v1.movies.crud import storage
 from api.api_v1.movies.dependencies import get_movie_by_slug
 
-from schemas.movie import Movie, MovieCreate
+from schemas.movie import Movie
 
 router = APIRouter(
     prefix="/{slug}",
@@ -25,37 +25,17 @@ router = APIRouter(
     },
 )
 
-"""
-Возвращает объект фильма по его slug
-
-Параметры:
-    movie_slug (str): slug фильма
-
-Возвращает:
-    Movie: объект фильма
-
-Исключения:
-    HTTPException: 404 если фильм не найден
-"""
-
 
 @router.get("/", response_model=Movie)
 def get_movie(movie: Annotated[Movie, Depends(get_movie_by_slug)]) -> Movie:
+    """
+    Получить фильм по его slug.
+
+    - **slug**: строковый идентификатор фильма
+    - Возвращает объект фильма
+    - Выбрасывает 404, если фильм не найден
+    """
     return movie
-
-
-"""
-Удаляет объект фильма по его slug
-
-Параметры:
-    movie_slug (str): slug фильма
-
-Возвращает:
-    None: тело пустое
-
-Исключения:
-    HTTPException: 404 если фильм не найден (проверка выполняется в зависимости)
-"""
 
 
 @router.delete(
@@ -63,4 +43,11 @@ def get_movie(movie: Annotated[Movie, Depends(get_movie_by_slug)]) -> Movie:
     status_code=status.HTTP_204_NO_CONTENT,
 )
 def delete_movie(movie: Annotated[Movie, Depends(get_movie_by_slug)]) -> None:
+    """
+    Удалить фильм по его slug.
+
+    - **slug**: строковый идентификатор фильма
+    - В случае успеха возвращает статус 204 (No Content)
+    - Выбрасывает 404, если фильм не найден
+    """
     storage.delete(movie=movie)
