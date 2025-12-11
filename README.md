@@ -19,7 +19,7 @@ Run dev server:
 ```shell
 fastapi dev
 ```
-
+```shell
 url-shortener/
 ├── main.py              # Основной FastAPI-приложение
 ├── api/                 # Роутеры API
@@ -35,3 +35,4 @@ url-shortener/
 │               └── details_views.py # Подробности/удаление
 └── schemas/             # Pydantic-модели
     └── short_url.py     # Определение моделей
+```
