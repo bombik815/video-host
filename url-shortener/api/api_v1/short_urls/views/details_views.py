@@ -6,7 +6,7 @@ from fastapi import (
 )
 from starlette import status
 
-from schemas.short_url import ShortUrl
+from schemas.short_url import ShortUrl, ShortUrlUpdate
 from api.api_v1.short_urls.dependencies import prefetch_short_urls
 from api.api_v1.short_urls.crud import storage
 
@@ -24,6 +24,10 @@ router = APIRouter(
         }
     },
 )
+
+ShortUrlBySlug = Annotated[ShortUrl, Depends(prefetch_short_urls)]
+
+
 """
 Возвращает объект сокращенной ссылки по ее slug
 
@@ -40,14 +44,22 @@ router = APIRouter(
 
 @router.get("/", response_model=ShortUrl)
 def read_short_url_details(
-    url: Annotated[ShortUrl, Depends(prefetch_short_urls)],
+    url: ShortUrlBySlug,
 ) -> ShortUrl:
     return url
+
+
+@router.put("/", response_model=ShortUrl)
+def update_short_url_details(url: ShortUrlBySlug, short_url_in: ShortUrlUpdate):
+    return storage.update(
+        short_url=url,
+        short_url_in=short_url_in,
+    )
 
 
 @router.delete(
     "/",
     status_code=status.HTTP_204_NO_CONTENT,
 )
-def delete_short_url(url: Annotated[ShortUrl, Depends(prefetch_short_urls)]) -> None:
+def delete_short_url(url: ShortUrlBySlug) -> None:
     storage.delete(short_url=url)
