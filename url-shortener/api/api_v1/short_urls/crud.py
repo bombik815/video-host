@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from schemas.short_url import ShortUrl, ShortUrlCreate
+from schemas.short_url import ShortUrl, ShortUrlCreate, ShortUrlUpdate
 
 
 class ShortUrlStorage(BaseModel):
@@ -23,7 +23,7 @@ class ShortUrlStorage(BaseModel):
         slug (str): slug объекта ShortUrl
 
     Возвращает:
-        ShortUrl | None: объект ShortUrl если найд��н, иначе None
+        ShortUrl | None: объект ShortUrl если найден, иначе None
     """
 
     def get_by_slug(self, slug: str) -> ShortUrl | None:
@@ -44,6 +44,17 @@ class ShortUrlStorage(BaseModel):
             **short_url_create.model_dump(),
         )
         self.slug_to_short_url[short_url.slug] = short_url
+        return short_url
+
+    def update(
+        self,
+        short_url: ShortUrl,
+        short_url_in: ShortUrlUpdate,
+    ):
+
+        for field_name, value in short_url_in:
+            setattr(short_url, field_name, value)
+
         return short_url
 
     def delete_by_slug(self, slug: str) -> None:
