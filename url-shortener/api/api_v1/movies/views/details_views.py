@@ -9,7 +9,7 @@ from starlette import status
 from api.api_v1.movies.crud import storage
 from api.api_v1.movies.dependencies import get_movie_by_slug
 
-from schemas.movie import Movie
+from schemas.movie import Movie, MovieUpdate
 
 router = APIRouter(
     prefix="/{slug}",
@@ -36,6 +36,25 @@ def get_movie(movie: Annotated[Movie, Depends(get_movie_by_slug)]) -> Movie:
     - Выбрасывает 404, если фильм не найден
     """
     return movie
+
+
+@router.put("/", response_model=Movie)
+def update_movie_details(
+    movie: Annotated[Movie, Depends(get_movie_by_slug)],
+    movie_in: MovieUpdate,
+):
+    """
+    Обновить информацию о фильме по его slug.
+
+    - **slug**: строковый идентификатор фильма (из пути)
+    - **movie_in**: обновленная информация о фильме
+    - Возвращает обновленный объект фильма
+    - Выбрасывает 404, если фильм не найден
+    """
+    return storage.update(
+        movie=movie,
+        movie_in=movie_in,
+    )
 
 
 @router.delete(
