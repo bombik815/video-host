@@ -25,7 +25,7 @@ def get_movies() -> list[Movie]:
 
 
 @router.post("/", response_model=Movie, status_code=status.HTTP_201_CREATED)
-def creat_movie(
+def create_movie(
     movie_create: MovieCreate,
 ):
     return storage.create(movie_create)
