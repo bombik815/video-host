@@ -20,6 +20,10 @@ Run dev server:
 fastapi dev
 ```
 ```shell
+uvicorn main:app --host 127.0.0.1 --port 8080
+```
+
+```shell
 url-shortener/
 ├── main.py              # Основной FastAPI-приложение
 ├── api/                 # Роутеры API
@@ -36,3 +40,5 @@ url-shortener/
 └── schemas/             # Pydantic-модели
     └── short_url.py     # Определение моделей
 ```
+
+
