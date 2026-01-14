@@ -25,9 +25,11 @@ router = APIRouter(
     },
 )
 
+MovieDep = Annotated[Movie, Depends(get_movie_by_slug)]
+
 
 @router.get("/", response_model=Movie)
-def get_movie(movie: Annotated[Movie, Depends(get_movie_by_slug)]) -> Movie:
+def get_movie(movie: MovieDep) -> Movie:
     """
     Получить фильм по его slug.
 
@@ -40,7 +42,7 @@ def get_movie(movie: Annotated[Movie, Depends(get_movie_by_slug)]) -> Movie:
 
 @router.put("/", response_model=Movie)
 def update_movie_details(
-    movie: Annotated[Movie, Depends(get_movie_by_slug)],
+    movie: MovieDep,
     movie_in: MovieUpdate,
 ):
     """
@@ -59,7 +61,7 @@ def update_movie_details(
 
 @router.patch("/", response_model=Movie)
 def update_movie_details_partial(
-    movie: Annotated[Movie, Depends(get_movie_by_slug)],
+    movie: MovieDep,
     movie_in: MovieUpdatePartial,
 ) -> Movie:
     return storage.update_partial(
@@ -72,7 +74,7 @@ def update_movie_details_partial(
     "/",
     status_code=status.HTTP_204_NO_CONTENT,
 )
-def delete_movie(movie: Annotated[Movie, Depends(get_movie_by_slug)]) -> None:
+def delete_movie(movie: MovieDep) -> None:
     """
     Удалить фильм по его slug.
 
