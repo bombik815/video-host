@@ -9,7 +9,7 @@ from starlette import status
 from api.api_v1.movies.crud import storage
 from api.api_v1.movies.dependencies import get_movie_by_slug
 
-from schemas.movie import Movie, MovieUpdate
+from schemas.movie import Movie, MovieUpdate, MovieUpdatePartial
 
 router = APIRouter(
     prefix="/{slug}",
@@ -52,6 +52,17 @@ def update_movie_details(
     - Выбрасывает 404, если фильм не найден
     """
     return storage.update(
+        movie=movie,
+        movie_in=movie_in,
+    )
+
+
+@router.patch("/", response_model=Movie)
+def update_movie_details_partial(
+    movie: Annotated[Movie, Depends(get_movie_by_slug)],
+    movie_in: MovieUpdatePartial,
+) -> Movie:
+    return storage.update_partial(
         movie=movie,
         movie_in=movie_in,
     )
