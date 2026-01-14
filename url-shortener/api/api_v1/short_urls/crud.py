@@ -1,6 +1,11 @@
 from pydantic import BaseModel
 
-from schemas.short_url import ShortUrl, ShortUrlCreate, ShortUrlUpdate
+from schemas.short_url import (
+    ShortUrl,
+    ShortUrlCreate,
+    ShortUrlUpdate,
+    ShortUrlPartialUpdate,
+)
 
 
 class ShortUrlStorage(BaseModel):
@@ -54,7 +59,20 @@ class ShortUrlStorage(BaseModel):
 
         for field_name, value in short_url_in:
             setattr(short_url, field_name, value)
+        return short_url
 
+    def update_partial(
+        self,
+        short_url: ShortUrl,
+        short_url_in: ShortUrlPartialUpdate,
+    ):
+
+        # Применяем частичное обновление только для полей, которые были явно переданы в запросе.
+        # model_dump(exclude_unset=True) — фича Pydantic v2: возвращает словарь ТОЛЬКО с теми полями,
+        # которые были заданы (не пропущены) в модели ShortUrlPartialUpdate.
+        # Это предотвращает перезапись отсутствующих полей значениями по умолчанию/None.
+        for field_name, value in short_url_in.model_dump(exclude_unset=True).items():
+            setattr(short_url, field_name, value)
         return short_url
 
     def delete_by_slug(self, slug: str) -> None:
