@@ -9,7 +9,7 @@ from starlette import status
 from api.api_v1.movies.crud import storage
 from api.api_v1.movies.dependencies import get_movie_by_slug
 
-from schemas.movie import Movie, MovieUpdate, MovieUpdatePartial
+from schemas.movie import Movie, MovieRead, MovieUpdate, MovieUpdatePartial
 
 router = APIRouter(
     prefix="/{slug}",
@@ -28,7 +28,7 @@ router = APIRouter(
 MovieDep = Annotated[Movie, Depends(get_movie_by_slug)]
 
 
-@router.get("/", response_model=Movie)
+@router.get("/", response_model=MovieRead)
 def get_movie(movie: MovieDep) -> Movie:
     """
     Получить фильм по его slug.
