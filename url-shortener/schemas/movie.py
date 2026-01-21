@@ -42,9 +42,18 @@ class MovieUpdatePartial(BaseModel):
     year: int | None = None
 
 
+class MovieRead(MovieBase):
+    slug: str
+
+
 class Movie(MovieBase):
     """
     Модель фильма
     """
 
     slug: str
+    notes: str = ""  # Внутренние заметки
+    status: str = (
+        "draft"  # Статус фильма (например, "draft", "published", "archived", "review_pending")
+    )
+    view_count: int = 0  # Количество просмотров
