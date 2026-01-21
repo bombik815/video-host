@@ -6,7 +6,12 @@ from fastapi import (
 )
 from starlette import status
 
-from schemas.short_url import ShortUrl, ShortUrlUpdate, ShortUrlPartialUpdate
+from schemas.short_url import (
+    ShortUrl,
+    ShortUrlUpdate,
+    ShortUrlPartialUpdate,
+    ShortUrlRead,
+)
 from api.api_v1.short_urls.dependencies import prefetch_short_urls
 from api.api_v1.short_urls.crud import storage
 
@@ -42,14 +47,14 @@ ShortUrlBySlug = Annotated[ShortUrl, Depends(prefetch_short_urls)]
 """
 
 
-@router.get("/", response_model=ShortUrl)
+@router.get("/", response_model=ShortUrlRead)
 def read_short_url_details(
     url: ShortUrlBySlug,
 ) -> ShortUrl:
     return url
 
 
-@router.put("/", response_model=ShortUrl)
+@router.put("/", response_model=ShortUrlRead)
 def update_short_url_details(url: ShortUrlBySlug, short_url_in: ShortUrlUpdate):
     return storage.update(
         short_url=url,
@@ -59,7 +64,7 @@ def update_short_url_details(url: ShortUrlBySlug, short_url_in: ShortUrlUpdate):
 
 @router.patch(
     "/",
-    response_model=ShortUrl,
+    response_model=ShortUrlRead,
 )
 def update_short_url_details_partial(
     url: ShortUrlBySlug, short_url_in: ShortUrlPartialUpdate
