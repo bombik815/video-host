@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI
 from fastapi import Request
 
@@ -37,3 +38,7 @@ async def read_root(
         "docs": str(docs_url),
         "redoc": str(redoc_url),
     }
+
+
+if __name__ == '__main__':
+    uvicorn.run(app, host='127.0.0.1', port=8080)
