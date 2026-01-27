@@ -198,3 +198,4 @@ __marimo__/
 /movies.json
 /url-shortener/short-urls.json
 !/url-shortener/movies.json
+/url-shortener/movies.json
