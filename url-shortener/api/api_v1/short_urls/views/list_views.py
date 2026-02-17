@@ -1,14 +1,18 @@
 from fastapi import (
     APIRouter,
     status,
-    BackgroundTasks,
+    Depends,
 )
 
-
+from api.api_v1.short_urls.dependencies import save_storage_state
 from schemas.short_url import ShortUrl, ShortUrlCreate, ShortUrlRead
 from api.api_v1.short_urls.crud import storage
 
-router = APIRouter(prefix="/short-urls", tags=["Short URLs"])
+router = APIRouter(
+    prefix="/short-urls",
+    tags=["Short URLs"],
+    dependencies=[Depends(save_storage_state)],
+)
 
 
 """
@@ -37,8 +41,5 @@ def read_short_urls_list() -> list[ShortUrl]:
 
 
 @router.post("/", response_model=ShortUrlRead, status_code=status.HTTP_201_CREATED)
-def create_short_url(
-    short_url_create: ShortUrlCreate, background_tasks: BackgroundTasks
-):
-    background_tasks.add_task(storage.save_state)  # добавим задачу на сохранение данных
+def create_short_url(short_url_create: ShortUrlCreate):
     return storage.create(short_url_create)
