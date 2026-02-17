@@ -1,9 +1,12 @@
-from fastapi import HTTPException, status
+import logging
+
+from fastapi import HTTPException, status, BackgroundTasks
 
 from .crud import storage
 
 from schemas.movie import Movie
 
+log = logging.getLogger(__name__)
 
 """
 Возвращает объект фильма по его slug
@@ -29,3 +32,9 @@ def get_movie_by_slug(movie_slug: str) -> Movie:
         status_code=status.HTTP_404_NOT_FOUND,
         detail=f"Movie with slug {movie_slug} not found",
     )
+
+
+def save_storage_state(background_tasks: BackgroundTasks):
+    yield
+    log.info("Add background task to save storage.")
+    background_tasks.add_task(storage.save_state)

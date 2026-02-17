@@ -45,7 +45,6 @@ def get_movie(movie: MovieDep) -> Movie:
 def update_movie_details(
     movie: MovieDep,
     movie_in: MovieUpdate,
-    background_tasks: BackgroundTasks,
 ):
     """
     Обновить информацию о фильме по его slug.
@@ -55,7 +54,6 @@ def update_movie_details(
     - Возвращает обновленный объект фильма
     - Выбрасывает 404, если фильм не найден
     """
-    background_tasks.add_task(storage.save_state)
     return storage.update(
         movie=movie,
         movie_in=movie_in,
@@ -66,9 +64,7 @@ def update_movie_details(
 def update_movie_details_partial(
     movie: MovieDep,
     movie_in: MovieUpdatePartial,
-    background_tasks: BackgroundTasks,
 ) -> Movie:
-    background_tasks.add_task(storage.save_state)
     return storage.update_partial(
         movie=movie,
         movie_in=movie_in,
@@ -79,7 +75,7 @@ def update_movie_details_partial(
     "/",
     status_code=status.HTTP_204_NO_CONTENT,
 )
-def delete_movie(movie: MovieDep, background_tasks: BackgroundTasks) -> None:
+def delete_movie(movie: MovieDep) -> None:
     """
     Удалить фильм по его slug.
 
@@ -87,5 +83,4 @@ def delete_movie(movie: MovieDep, background_tasks: BackgroundTasks) -> None:
     - В случае успеха возвращает статус 204 (No Content)
     - Выбрасывает 404, если фильм не найден
     """
-    background_tasks.add_task(storage.save_state)
     storage.delete(movie=movie)
