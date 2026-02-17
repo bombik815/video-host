@@ -1,6 +1,10 @@
 import logging
 
-from fastapi import HTTPException, BackgroundTasks
+from fastapi import (
+    HTTPException,
+    BackgroundTasks,
+    Request,
+)
 from starlette import status
 
 from schemas.short_url import ShortUrl
@@ -9,6 +13,15 @@ from .crud import storage
 
 log = logging.getLogger(__name__)
 
+
+UNSAFE_METHODS = frozenset(
+    {
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE",
+    }
+)
 """
 Возвращает объект сокращенной ссылки по ее slug
 
@@ -35,7 +48,8 @@ def prefetch_short_urls(slug: str) -> ShortUrl:
     )
 
 
-def save_storage_state(background_tasks: BackgroundTasks):
+def save_storage_state(request: Request, background_tasks: BackgroundTasks):
     yield
-    log.info("Add background task to save storage.")
-    background_tasks.add_task(storage.save_state)
+    if request.method in UNSAFE_METHODS:
+        log.info("Add background task to save storage.")
+        background_tasks.add_task(storage.save_state)
