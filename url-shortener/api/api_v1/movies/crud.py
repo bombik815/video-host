@@ -67,11 +67,11 @@ class MovieStorage(BaseModel):
     def delete_by_slug(self, slug: str) -> None:
         self.slug_to_movie.pop(slug, None)
         self.save_state()
-        log.info("Saved movies state to storage file.")
+        log.info("The movies has been delete in storage.")
 
     def delete(self, movie: Movie) -> None:
         self.delete_by_slug(slug=movie.slug)
-        log.info("Saved movies state to storage file.")
+        log.info("The movies has been delete in storage.")
 
     def init_storage_from_state(self) -> None:
         """
