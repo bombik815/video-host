@@ -71,10 +71,7 @@ def update_movie_details_partial(
     )
 
 
-@router.delete(
-    "/",
-    status_code=status.HTTP_204_NO_CONTENT,
-)
+@router.delete("/", status_code=status.HTTP_204_NO_CONTENT)
 def delete_movie(movie: MovieDep) -> None:
     """
     Удалить фильм по его slug.
