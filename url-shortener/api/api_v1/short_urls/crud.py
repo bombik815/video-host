@@ -10,8 +10,8 @@ from schemas.short_url import (
     ShortUrlPartialUpdate,
 )
 
-
 log = logging.getLogger(__name__)
+
 
 class ShortUrlStorage(BaseModel):
     slug_to_short_url: dict[str, ShortUrl] = {}
@@ -80,7 +80,8 @@ class ShortUrlStorage(BaseModel):
             **short_url_create.model_dump(),
         )
         self.slug_to_short_url[short_url.slug] = short_url
-        self.save_state() # save to json file
+        self.save_state()  # save to json file
+        log.info("Created new short url.")
         return short_url
 
     def update(
@@ -118,10 +119,3 @@ class ShortUrlStorage(BaseModel):
 
 
 storage = ShortUrlStorage()
-
-
-
-
-
-
-
