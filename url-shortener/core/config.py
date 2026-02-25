@@ -7,7 +7,13 @@ SHORT_URLS_STORAGE_FILEPATH = BASE_DIR / "short-urls.json"
 MOVIES_STORAGE_FILEPATH = BASE_DIR / "movies.json"
 
 
-LOG_LEVEL=logging.INFO
+LOG_LEVEL = logging.INFO
 LOG_FORMAT: str = (
     "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s"
+)
+API_TOKENS: frozenset[str] = frozenset(
+    {
+        "3hJbSI2txCdyBWd9EPV1AA",
+        "hUXC7VomgiLgWx-MRGLrRg",
+    }
 )

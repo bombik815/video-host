@@ -41,4 +41,7 @@ url-shortener/
     └── short_url.py     # Определение моделей
 ```
 
-
+## Snippets
+```shell
+python -c "import secrets; print(secrets.token_urlsafe(16))"
+```
