@@ -3,14 +3,21 @@ from typing import Annotated
 from fastapi import (
     Depends,
     APIRouter,
-    BackgroundTasks,
 )
 from starlette import status
 
 from api.api_v1.movies.crud import storage
-from api.api_v1.movies.dependencies import get_movie_by_slug
+from api.api_v1.movies.dependencies import (
+    get_movie_by_slug,
+    api_token_required,
+)
 
-from schemas.movie import Movie, MovieRead, MovieUpdate, MovieUpdatePartial
+from schemas.movie import (
+    Movie,
+    MovieRead,
+    MovieUpdate,
+    MovieUpdatePartial,
+)
 
 router = APIRouter(
     prefix="/{slug}",
@@ -45,6 +52,7 @@ def get_movie(movie: MovieDep) -> Movie:
 def update_movie_details(
     movie: MovieDep,
     movie_in: MovieUpdate,
+    _=Depends(api_token_required),
 ):
     """
     Обновить информацию о фильме по его slug.
@@ -64,6 +72,7 @@ def update_movie_details(
 def update_movie_details_partial(
     movie: MovieDep,
     movie_in: MovieUpdatePartial,
+    _=Depends(api_token_required),
 ) -> Movie:
     return storage.update_partial(
         movie=movie,
@@ -72,7 +81,10 @@ def update_movie_details_partial(
 
 
 @router.delete("/", status_code=status.HTTP_204_NO_CONTENT)
-def delete_movie(movie: MovieDep) -> None:
+def delete_movie(
+    movie: MovieDep,
+    _=Depends(api_token_required),
+) -> None:
     """
     Удалить фильм по его slug.
 
