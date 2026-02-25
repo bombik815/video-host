@@ -6,7 +6,7 @@ from fastapi import (
 )
 
 from api.api_v1.movies.crud import storage
-from api.api_v1.movies.dependencies import save_storage_state
+from api.api_v1.movies.dependencies import save_storage_state, api_token_required
 
 from schemas.movie import Movie, MovieCreate, MovieRead
 
@@ -31,5 +31,8 @@ def get_movies() -> list[Movie]:
 
 
 @router.post("/", response_model=Movie, status_code=status.HTTP_201_CREATED)
-def create_movie(movie_create: MovieCreate, background_tasks: BackgroundTasks):
+def create_movie(
+    movie_create: MovieCreate,
+    _=Depends(api_token_required),
+):
     return storage.create(movie_create)
