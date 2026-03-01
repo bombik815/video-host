@@ -12,7 +12,10 @@ from schemas.short_url import (
     ShortUrlPartialUpdate,
     ShortUrlRead,
 )
-from api.api_v1.short_urls.dependencies import prefetch_short_urls
+from api.api_v1.short_urls.dependencies import (
+    prefetch_short_urls,
+    api_token_required_for_unsafe_methods,
+)
 from api.api_v1.short_urls.crud import storage
 
 router = APIRouter(
@@ -25,7 +28,17 @@ router = APIRouter(
                     "example": {"detail": "URL 'slug' not found"},
                 }
             },
-        }
+        },
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Unauthenticated. Only for unsafe method.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Invalid API token",
+                    },
+                },
+            },
+        },
     },
 )
 
