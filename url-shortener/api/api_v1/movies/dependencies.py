@@ -5,16 +5,20 @@ from fastapi import (
     HTTPException,
     BackgroundTasks,
     Request,
-    Header,
     status,
     Depends,
 )
 from fastapi.security import (
     HTTPAuthorizationCredentials,
     HTTPBearer,
+    HTTPBasic,
+    HTTPBasicCredentials,
 )
 
-from core.config import API_TOKENS
+from core.config import (
+    API_TOKENS,
+    USERS_DB,
+)
 from .crud import storage
 
 from schemas.movie import Movie
@@ -38,6 +42,11 @@ static_api_token = HTTPBearer(
     auto_error=False,
 )
 
+user_basic_auth = HTTPBasic(
+    scheme_name="Basic Auth",
+    description="Your Basic Auth token from the developer portal",
+    auto_error=False,
+)
 """
 Возвращает объект фильма по его slug
 
@@ -81,6 +90,21 @@ def api_token_required_for_unsafe_methods(
         Depends(static_api_token),
     ] = None,
 ):
+    """
+    Проверяет наличие и действительность токена API для небезопасных методов HTTP.
+
+    Эта функция служит зависимостью FastAPI и применяется к маршрутам,
+    которые могут изменять данные (POST, PUT, PATCH, DELETE).
+    Для безопасных методов (GET, HEAD, OPTIONS) проверка не требуется.
+
+    Параметры:
+        request (Request): Объект HTTP-запроса от FastAPI
+        api_token (HTTPAuthorizationCredentials | None): Токен API из заголовка Authorization
+
+    Исключения:
+        HTTPException: 401 Unauthorized если токен не предоставлен
+        HTTPException: 403 Forbidden если токен недействителен
+    """
     # Require token only for unsafe methods; allow safe methods without token
     if request.method not in UNSAFE_METHODS:
         return
@@ -98,3 +122,51 @@ def api_token_required_for_unsafe_methods(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Invalid API token",
         )
+
+
+def user_basic_auth_required_for_unsafe_methods(
+    request: Request,
+    credentials: Annotated[
+        HTTPBasicCredentials | None,
+        Depends(user_basic_auth),
+    ] = None,
+):
+    """
+    Проверяет учетные данные пользователя по методу Basic Authentication для небезопасных методов.
+
+    Эта функция служит зависимостью FastAPI и применяется к маршрутам,
+    которые могут изменять данные (POST, PUT, PATCH, DELETE).
+    Для безопасных методов (GET, HEAD, OPTIONS) проверка не требуется.
+
+    Параметры:
+        request (Request): Объект HTTP-запроса от FastAPI
+        credentials (HTTPBasicCredentials | None): Учетные данные пользователя из заголовка Authorization
+
+    Исключения:
+        HTTPException: 401 Unauthorized если учетные данные не предоставлены или неверны
+    """
+    # Require auth only for unsafe methods; allow safe methods without auth
+    if request.method not in UNSAFE_METHODS:
+        return
+
+    # Проверяем, что учетные данные были предоставлены
+    if not credentials:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User credentials required. Invalid username or password.",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+
+    # Проверяем, что предоставленные учетные данные являются действительными
+    if (
+        credentials
+        and credentials.username in USERS_DB
+        and USERS_DB[credentials.username] == credentials.password
+    ):
+        return
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="User credentials required. Invalid username or password.",
+        headers={"WWW-Authenticate": "Basic"},
+    )
