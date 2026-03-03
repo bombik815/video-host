@@ -3,10 +3,9 @@ from typing import Annotated
 
 from fastapi import (
     HTTPException,
-    status,
     BackgroundTasks,
     Request,
-    Query,
+    Header,
     status,
 )
 
@@ -67,7 +66,7 @@ def api_token_required_for_unsafe_methods(
     request: Request,
     api_token: Annotated[
         str,
-        Query(),
+        Header(alias="x-auth-token"),
     ] = "",
 ):
     # Require token only for unsafe methods; allow safe methods without token
