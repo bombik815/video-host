@@ -193,9 +193,8 @@ __marimo__/
 .qodo
 .kilocode
 .roo
-
+.qwen
 
 /QWEN.md
-!/.qwen/
-/.qwen/skills/fix/SKILL.md
-!/.qwen/settings.json
+
+
