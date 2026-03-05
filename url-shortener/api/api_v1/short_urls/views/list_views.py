@@ -6,8 +6,7 @@ from fastapi import (
 
 from api.api_v1.short_urls.dependencies import (
     save_storage_state,
-    api_token_required_for_unsafe_methods,
-    user_basic_auth_required_for_unsafe_methods,
+    api_token_or_user_basic_auth_required_for_unsafe_methods,
 )
 from schemas.short_url import (
     ShortUrl,
@@ -21,8 +20,7 @@ router = APIRouter(
     tags=["Short URLs"],
     dependencies=[
         Depends(save_storage_state),
-        # Depends(api_token_required_for_unsafe_methods),
-        Depends(user_basic_auth_required_for_unsafe_methods),
+        Depends(api_token_or_user_basic_auth_required_for_unsafe_methods),
     ],
     responses={
         status.HTTP_401_UNAUTHORIZED: {
