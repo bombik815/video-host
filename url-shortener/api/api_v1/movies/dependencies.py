@@ -83,39 +83,9 @@ def save_storage_state(
         background_tasks.add_task(storage.save_state)
 
 
-def api_token_required_for_unsafe_methods(
-    request: Request,
-    api_token: Annotated[
-        HTTPAuthorizationCredentials | None,
-        Depends(static_api_token),
-    ] = None,
+def validate_api_token(
+    api_token: HTTPAuthorizationCredentials,
 ):
-    """
-    Проверяет наличие и действительность токена API для небезопасных методов HTTP.
-
-    Эта функция служит зависимостью FastAPI и применяется к маршрутам,
-    которые могут изменять данные (POST, PUT, PATCH, DELETE).
-    Для безопасных методов (GET, HEAD, OPTIONS) проверка не требуется.
-
-    Параметры:
-        request (Request): Объект HTTP-запроса от FastAPI
-        api_token (HTTPAuthorizationCredentials | None): Токен API из заголовка Authorization
-
-    Исключения:
-        HTTPException: 401 Unauthorized если токен не предоставлен
-        HTTPException: 403 Forbidden если токен недействителен
-    """
-    # Require token only for unsafe methods; allow safe methods without token
-    if request.method not in UNSAFE_METHODS:
-        return
-
-    # Проверяем, что токен API был предоставлен
-    if not api_token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="API token is required",
-        )
-
     # Проверяем, что предоставленный токен API является действительным
     if api_token.credentials not in API_TOKENS:
         raise HTTPException(
@@ -124,39 +94,23 @@ def api_token_required_for_unsafe_methods(
         )
 
 
-def user_basic_auth_required_for_unsafe_methods(
+def api_token_required_for_unsafe_methods(
     request: Request,
-    credentials: Annotated[
-        HTTPBasicCredentials | None,
-        Depends(user_basic_auth),
+    api_token: Annotated[
+        HTTPAuthorizationCredentials | None,
+        Depends(static_api_token),
     ] = None,
 ):
-    """
-    Проверяет учетные данные пользователя по методу Basic Authentication для небезопасных методов.
-
-    Эта функция служит зависимостью FastAPI и применяется к маршрутам,
-    которые могут изменять данные (POST, PUT, PATCH, DELETE).
-    Для безопасных методов (GET, HEAD, OPTIONS) проверка не требуется.
-
-    Параметры:
-        request (Request): Объект HTTP-запроса от FastAPI
-        credentials (HTTPBasicCredentials | None): Учетные данные пользователя из заголовка Authorization
-
-    Исключения:
-        HTTPException: 401 Unauthorized если учетные данные не предоставлены или неверны
-    """
-    # Require auth only for unsafe methods; allow safe methods without auth
+    # Require token only for unsafe methods; allow safe methods without token
     if request.method not in UNSAFE_METHODS:
         return
 
-    # Проверяем, что учетные данные были предоставлены
-    if not credentials:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User credentials required. Invalid username or password.",
-            headers={"WWW-Authenticate": "Basic"},
-        )
+    validate_api_token(api_token=api_token)
 
+
+def validate_basic_auth(
+    credentials: HTTPBasicCredentials | None,
+):
     # Проверяем, что предоставленные учетные данные являются действительными
     if (
         credentials
@@ -167,6 +121,52 @@ def user_basic_auth_required_for_unsafe_methods(
 
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="User credentials required. Invalid username or password.",
+        detail="Invalid username or password.",
         headers={"WWW-Authenticate": "Basic"},
+    )
+
+
+def user_basic_auth_required_for_unsafe_methods(
+    request: Request,
+    credentials: Annotated[
+        HTTPBasicCredentials | None,
+        Depends(user_basic_auth),
+    ] = None,
+):
+
+    # Require auth only for unsafe methods; allow safe methods without auth
+    if request.method not in UNSAFE_METHODS:
+        return
+
+    validate_basic_auth(credentials=credentials)
+
+
+def api_token_or_user_basic_auth_required_for_unsafe_methods(
+    request: Request,
+    api_token: Annotated[
+        HTTPAuthorizationCredentials | None,
+        Depends(static_api_token),
+    ] = None,
+    credentials: Annotated[
+        HTTPBasicCredentials | None,
+        Depends(user_basic_auth),
+    ] = None,
+):
+    """
+    Проверяет, что для не безопасных HTTP методов (например, POST, PUT, DELETE)
+    предоставлен либо API токен, либо базовая авторизация (логин и пароль).
+    Если ни одно из этих условий не выполнено, вызывает исключение с кодом 401 Unauthorized.
+    """
+    if request.method not in UNSAFE_METHODS:
+        return
+    # проверяем если логин и пароль используется
+    if credentials:
+        return validate_basic_auth(credentials=credentials)
+    # Проверяем если токен  используется
+    if api_token:
+        return validate_api_token(api_token=api_token)
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="API token or basic auth required!",
     )
