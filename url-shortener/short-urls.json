@@ -1,0 +1,28 @@
+{
+  "slug_to_short_url": {
+    "example": {
+      "target_url": "https://example.com/",
+      "description": "Example site",
+      "slug": "example",
+      "visits": 42
+    },
+    "google": {
+      "target_url": "https://google.com/",
+      "description": "The search engine",
+      "slug": "google",
+      "visits": 42
+    },
+    "string3": {
+      "target_url": "https://example3.com/",
+      "description": "about string3",
+      "slug": "string3",
+      "visits": 42
+    },
+    "foo": {
+      "target_url": "https://foo.com/",
+      "description": "The Foo",
+      "slug": "foo",
+      "visits": 42
+    }
+  }
+}
