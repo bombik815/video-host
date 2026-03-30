@@ -23,6 +23,12 @@
       "description": "The Foo",
       "slug": "foo",
       "visits": 42
+    },
+    "bar": {
+      "target_url": "https://bar.com/",
+      "description": "",
+      "slug": "bar",
+      "visits": 42
     }
   }
 }
