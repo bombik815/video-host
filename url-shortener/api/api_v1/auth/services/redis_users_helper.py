@@ -3,14 +3,16 @@ from redis import Redis
 from api.api_v1.auth.services.users_helper import AbstractUsersHelper
 from core import config
 
-""" 
-проверка наличия токена;
-добавление токена в хранилище;
-генерация нового токена;
-"""
-
 
 class RedisUsersHelper(AbstractUsersHelper):
+    """
+    Реализация работы с пользователями через Redis.
+    Хранит данные пользователей в Redis (БД №2).
+    
+    Основные методы:
+    - get_user_password(username): получает пароль пользователя из Redis через GET
+    - validate_user_password(username, password): проверяет корректность пароля (унаследован)
+    """
 
     def __init__(self, host: str, port: int, db: int) -> None:
         self.redis = Redis(

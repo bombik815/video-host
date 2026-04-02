@@ -3,8 +3,14 @@ from abc import ABC, abstractmethod
 
 class AbstractUsersHelper(ABC):
     """
-    - Получение пароля по username;
-    - Совпадает ли пароль с переданным пользователю;
+    Абстрактный базовый класс для работы с пользователями.
+    Определяет интерфейс для получения пароля и валидации пользователей.
+    Наследники должны реализовать метод get_user_password.
+
+    Основные методы:
+    - get_user_password(username): получает пароль пользователя из хранилища
+    - check_passwords_natch(password1, password2): сравнивает два пароля
+    - validate_user_password(username, password): проверяет корректность пароля пользователя
     """
 
     @abstractmethod
@@ -19,7 +25,7 @@ class AbstractUsersHelper(ABC):
     def check_passwords_natch(cls, password1: str, password2: str) -> bool:
         """
         Проверка паролей на совпадение
-        - retur: True если есть, иначе False
+        - return: True если есть, иначе False
         """
         return password1 == password2
 
@@ -28,7 +34,7 @@ class AbstractUsersHelper(ABC):
         Передаем:
         - username - чей пароль проверить
         - password - переданный пароль, сверить с паролем в БД
-        - retur: True если есть, иначе False
+        - return: True если есть, иначе False
         """
 
         db_password = self.get_user_password(username)

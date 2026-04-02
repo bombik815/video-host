@@ -3,14 +3,17 @@ from redis import Redis
 from api.api_v1.auth.services.tokens_helper import AbstractTokenHelper
 from core import config
 
-""" 
-проверка наличия токена;
-добавление токена в хранилище;
-генерация нового токена;
-"""
-
 
 class RedisTokenHelper(AbstractTokenHelper):
+    """
+    Реализация работы с токенами через Redis.
+    Хранит токены в Redis в виде множества (SET).
+    
+    Основные методы:
+    - token_exist(token): проверяет наличие токена в Redis SET через SISMEMBER
+    - add_token(token): добавляет токен в Redis через SET
+    """
+
     def __init__(self, host: str, port: int, db: int, tokens_set_name: str) -> None:
         self.redis = Redis(
             host=host,
