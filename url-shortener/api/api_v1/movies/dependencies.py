@@ -19,7 +19,9 @@ from core.config import USERS_DB
 from .crud import storage
 
 from schemas.movie import Movie
-from ..short_urls.redis import redis_tokens
+from api.api_v1.auth.services import (
+    redis_tokens,
+)
 
 log = logging.getLogger(__name__)
 

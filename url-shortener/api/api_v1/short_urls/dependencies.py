@@ -18,8 +18,11 @@ from fastapi.security import (
 from core.config import USERS_DB
 from schemas.short_url import ShortUrl
 
+from api.api_v1.auth.services import (
+    redis_tokens,
+    redis_users,
+)
 from .crud import storage
-from .redis import redis_tokens
 
 log = logging.getLogger(__name__)
 
@@ -113,14 +116,12 @@ def api_token_required_for_unsafe_methods(
 def validate_basic_auth(
     credentials: HTTPBasicCredentials | None,
 ):
-    # Проверяем, что предоставленные учетные данные являются действительными
-    if (
-        credentials
-        and credentials.username in USERS_DB
-        and USERS_DB[credentials.username] == credentials.password
+    # Проверяем, что предоставленные учетные данные являются действительными в REDIS БД
+    if credentials and redis_users.validate_user_password(
+        username=credentials.username,
+        password=credentials.password,
     ):
         return
-
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid username or password.",

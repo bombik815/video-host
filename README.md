@@ -45,3 +45,24 @@ url-shortener/
 ```shell
 python -c "import secrets; print(secrets.token_urlsafe(16))"
 ```
+### Пример команды для REDIS 
+```
+# ===== ДОБАВЛЕНИЕ ПОЛЬЗОВАТЕЛЕЙ =====
+docker exec -it redis redis-cli -n 2 SET alice alice123
+docker exec -it redis redis-cli -n 2 SET john john456
+docker exec -it redis redis-cli -n 2 SET maria maria789
+
+# ===== ПОЛУЧЕНИЕ ДАННЫХ =====
+docker exec -it redis redis-cli -n 2 GET alice 
+docker exec -it redis redis-cli -n 2 GETALL john
+
+# ===== ПРОВЕРКА СУЩЕСТВОВАНИЯ =====
+docker exec -it redis redis-cli -n 2 EXISTS alice
+
+# ===== СПИСОК ВСЕХ ПОЛЬЗОВАТЕЛЕЙ =====
+docker exec -it redis redis-cli -n 2 KEYS users:*
+
+# ===== УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ =====
+docker exec -it redis redis-cli -n 2 DEL alice
+
+```

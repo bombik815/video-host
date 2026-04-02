@@ -12,18 +12,6 @@
       "slug": "google",
       "visits": 42
     },
-    "string3": {
-      "target_url": "https://example3.com/",
-      "description": "about string3",
-      "slug": "string3",
-      "visits": 42
-    },
-    "foo": {
-      "target_url": "https://foo.com/",
-      "description": "",
-      "slug": "foo",
-      "visits": 42
-    },
     "bar": {
       "target_url": "https://bar.com/",
       "description": "",
