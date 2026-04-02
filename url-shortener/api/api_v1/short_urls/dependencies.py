@@ -15,7 +15,7 @@ from fastapi.security import (
     HTTPBasicCredentials,
 )
 
-from core.config import USERS_DB, REDIS_TOKENS_SET_NAME
+from core.config import USERS_DB
 from schemas.short_url import ShortUrl
 
 from .crud import storage
@@ -80,7 +80,7 @@ def save_storage_state(request: Request, background_tasks: BackgroundTasks):
 
 def validate_api_token(api_token: HTTPAuthorizationCredentials):
     # Проверяет, что предоставленный API токен содержится в наборе допустимых токенов в REDIS
-    if redis_tokens.sismember(REDIS_TOKENS_SET_NAME, api_token.credentials):
+    if redis_tokens.token_exist(api_token.credentials):
         return
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,

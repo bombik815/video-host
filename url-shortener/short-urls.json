@@ -20,7 +20,7 @@
     },
     "foo": {
       "target_url": "https://foo.com/",
-      "description": "The Foo",
+      "description": "",
       "slug": "foo",
       "visits": 42
     },
