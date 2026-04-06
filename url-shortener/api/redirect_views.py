@@ -7,7 +7,6 @@ from schemas.short_url import ShortUrl
 
 from api.api_v1.short_urls.dependencies import prefetch_short_urls
 
-
 router = APIRouter(prefix="/r", tags=["Redirect"])
 
 
@@ -25,7 +24,6 @@ router = APIRouter(prefix="/r", tags=["Redirect"])
 """
 
 
-@router.get("/{slug}")
 @router.get("/{slug}/")
 def redirect_short_url(
     url: Annotated[
