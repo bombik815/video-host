@@ -18,11 +18,20 @@ USERS_DB: dict[[str, str]] = {
     "bob": "qwerty",
 }
 
+# "f8I7ZdAF0p_CYdVQQZ6Fqg"
+# "gbFNjMk7ryhf0Ia2pVGwXQ"
+
+
 # Redis configuration for token storage
 REDIS_HOST = "localhost"
 REDIS_PORT = 6379
 REDIS_DB = 0
 REDIS_DB_TOKENS = 1
 REDIS_DB_USERS = 2
+REDIS_DB_SHORT_URLS = 3
+REDIS_DB_MOVIES = 4
+
 
 REDIS_TOKENS_SET_NAME = "tokens"
+REDIS_SHORT_URLS_HASH_NAME = "short-urls"
+REDIS_MOVIES_HASH_NAME = "movies"
