@@ -51,6 +51,13 @@ class ShortUrlStorage(BaseModel):
         )
         log.warning("Recovered data from storage file.")
 
+    def save_short_url(self, short_url: ShortUrl) -> None:
+        redis.hset(
+            name=config.REDIS_SHORT_URLS_HASH_NAME,
+            key=short_url.slug,
+            value=short_url.model_dump_json(),
+        )
+
     """
     Возвращает список всех сохраненных объектов ShortUrl.
     
@@ -96,11 +103,7 @@ class ShortUrlStorage(BaseModel):
     def create(self, short_url_create: ShortUrlCreate) -> ShortUrl:
         short_url = ShortUrl(**short_url_create.model_dump())
         # Этот код сохраняет информацию о короткой ссылке в Redis
-        redis.hset(
-            name=config.REDIS_SHORT_URLS_HASH_NAME,
-            key=short_url.slug,
-            value=short_url.model_dump_json(),
-        )
+        self.save_short_url(short_url)
         log.info("Created new short url %s.", short_url)
         return short_url
 
@@ -112,7 +115,7 @@ class ShortUrlStorage(BaseModel):
 
         for field_name, value in short_url_in:
             setattr(short_url, field_name, value)
-        self.save_state()  # save to json file
+        self.save_short_url(short_url)  # save to REDIS
         return short_url
 
     def update_partial(
@@ -127,7 +130,7 @@ class ShortUrlStorage(BaseModel):
         # Это предотвращает перезапись отсутствующих полей значениями по умолчанию/None.
         for field_name, value in short_url_in.model_dump(exclude_unset=True).items():
             setattr(short_url, field_name, value)
-        self.save_state()  # save to json file
+        self.save_short_url(short_url)  # save to REDIS
         return short_url
 
     def delete_by_slug(self, slug: str) -> None:
