@@ -59,7 +59,11 @@ class ShortUrlStorage(BaseModel):
     """
 
     def get(self) -> list[ShortUrl]:
-        return list(self.slug_to_short_url.values())
+        # Получение список значение ShortUrl from Redis через hvals
+        return [
+            ShortUrl.model_validate_json(value)
+            for value in redis.hvals(name=config.REDIS_SHORT_URLS_HASH_NAME)
+        ]
 
     """
     Возвращает объект ShortUrl по его slug.
