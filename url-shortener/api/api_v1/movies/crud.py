@@ -50,16 +50,19 @@ class MovieStorage(BaseModel):
             return None
         return Movie.model_validate_json(movie_json)
 
-    def create(self, movie_create: MovieCreate) -> Movie:
-        movie = Movie(
-            **movie_create.model_dump(),
-        )
-        # Этот код сохраняет информацию о короткой ссылке в Redis
+    def _save_to_redis(self, movie: Movie) -> None:
+        """Сохраняет информацию о фильме в Redis."""
         redis.hset(
             name=config.REDIS_MOVIES_HASH_NAME,
             key=movie.slug,
             value=movie.model_dump_json(),
         )
+
+    def create(self, movie_create: MovieCreate) -> Movie:
+        movie = Movie(
+            **movie_create.model_dump(),
+        )
+        self._save_to_redis(movie)
         log.info("Created new movie: %s", movie.slug)
         return movie
 
@@ -70,7 +73,7 @@ class MovieStorage(BaseModel):
     ):
         for field_name, value in movie_in:
             setattr(movie, field_name, value)
-        self.save_state()
+        self._save_to_redis(movie)
         return movie
 
     def update_partial(
@@ -80,11 +83,16 @@ class MovieStorage(BaseModel):
     ):
         for field_name, value in movie_in.model_dump(exclude_unset=True).items():
             setattr(movie, field_name, value)
-        self.save_state()
+        self._save_to_redis(movie)
         return movie
+
+    def _delete_from_redis(self, slug: str) -> None:
+        """Удаляет информацию о фильме из Redis."""
+        redis.hdel(name=config.REDIS_MOVIES_HASH_NAME, key=slug)
 
     def delete_by_slug(self, slug: str) -> None:
         self.slug_to_movie.pop(slug, None)
+        self._delete_from_redis(slug)
         self.save_state()
         log.info("The movies has been delete in storage.")
 
