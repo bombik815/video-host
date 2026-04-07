@@ -39,7 +39,9 @@ class MovieStorage(BaseModel):
         )
 
     def get(self) -> list[Movie]:
-        return list(self.slug_to_movie.values())
+        # Получаем список фильмов from REDIS через hvals
+        movies_json = redis.hvals(name=config.REDIS_MOVIES_HASH_NAME)
+        return [Movie.model_validate_json(movie_json) for movie_json in movies_json]
 
     def get_by_slug(self, slug: str) -> Movie | None:
         # Получаем запись с REDIS по slug
