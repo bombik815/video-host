@@ -88,16 +88,10 @@ class MovieStorage(BaseModel):
 
     def _delete_from_redis(self, slug: str) -> None:
         """Удаляет информацию о фильме из Redis."""
-        redis.hdel(name=config.REDIS_MOVIES_HASH_NAME, key=slug)
-
-    def delete_by_slug(self, slug: str) -> None:
-        self.slug_to_movie.pop(slug, None)
-        self._delete_from_redis(slug)
-        self.save_state()
-        log.info("The movies has been delete in storage.")
+        redis.hdel(config.REDIS_MOVIES_HASH_NAME, slug)
 
     def delete(self, movie: Movie) -> None:
-        self.delete_by_slug(slug=movie.slug)
+        self._delete_from_redis(slug=movie.slug)
         log.info("The movies has been delete in storage.")
 
     def init_storage_from_state(self) -> None:
