@@ -72,7 +72,12 @@ class ShortUrlStorage(BaseModel):
     """
 
     def get_by_slug(self, slug: str) -> ShortUrl | None:
-        return self.slug_to_short_url.get(slug)
+        # Получаем запись с REDIS по slug
+        if data := redis.hget(
+            name=config.REDIS_SHORT_URLS_HASH_NAME,
+            key=slug,
+        ):
+            return ShortUrl.model_validate_json(data)
 
     """
     Создает объект ShortUrl на основе переданных параметров.
