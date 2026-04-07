@@ -6,7 +6,6 @@ from fastapi import (
 
 from api.api_v1.movies.crud import storage
 from api.api_v1.movies.dependencies import (
-    save_storage_state,
     api_token_or_user_basic_auth_required_for_unsafe_methods,
 )
 
@@ -16,7 +15,6 @@ router = APIRouter(
     prefix="/movies",
     tags=["Movies"],
     dependencies=[
-        Depends(save_storage_state),
         # Depends(api_token_required_for_unsafe_methods),
         Depends(api_token_or_user_basic_auth_required_for_unsafe_methods),
     ],
@@ -49,7 +47,5 @@ def get_movies() -> list[Movie]:
 
 
 @router.post("/", response_model=Movie, status_code=status.HTTP_201_CREATED)
-def create_movie(
-    movie_create: MovieCreate,
-):
+def create_movie(movie_create: MovieCreate):
     return storage.create(movie_create)

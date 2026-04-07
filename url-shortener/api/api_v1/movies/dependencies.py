@@ -3,7 +3,6 @@ from typing import Annotated
 
 from fastapi import (
     HTTPException,
-    BackgroundTasks,
     Request,
     status,
     Depends,
@@ -73,16 +72,6 @@ def get_movie_by_slug(movie_slug: str) -> Movie:
     )
 
 
-def save_storage_state(
-    request: Request,
-    background_tasks: BackgroundTasks,
-):
-    yield
-    if request.method in UNSAFE_METHODS:
-        log.info("Add background task to save storage.")
-        background_tasks.add_task(storage.save_state)
-
-
 def validate_api_token(
     api_token: HTTPAuthorizationCredentials,
 ):
@@ -102,7 +91,7 @@ def api_token_required_for_unsafe_methods(
         Depends(static_api_token),
     ] = None,
 ):
-    # Require token only for unsafe methods; allow safe methods without token
+    # Требуется токен только для опасных методов; Разрешить безопасные методы без токена
     if request.method not in UNSAFE_METHODS:
         return
 
@@ -135,10 +124,9 @@ def user_basic_auth_required_for_unsafe_methods(
     ] = None,
 ):
 
-    # Require auth only for unsafe methods; allow safe methods without auth
+    # Требуется авторизация только для опасных методов; Разрешить безопасные методы без аутентификации
     if request.method not in UNSAFE_METHODS:
         return
-
     validate_basic_auth(credentials=credentials)
 
 

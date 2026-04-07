@@ -1,9 +1,8 @@
 import logging
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 from redis import Redis
 
 from core import config
-from core.config import MOVIES_STORAGE_FILEPATH
 from schemas.movie import Movie, MovieCreate, MovieUpdate, MovieUpdatePartial
 
 log = logging.getLogger(__name__)
@@ -19,24 +18,6 @@ redis = Redis(
 # Хранилище данных о фильмах
 class MovieStorage(BaseModel):
     slug_to_movie: dict[str, Movie] = {}
-
-    # Сохраняет текущее состояние хранилища в JSON-файл.
-    def save_state(self) -> None:
-        MOVIES_STORAGE_FILEPATH.write_text(
-            self.model_dump_json(indent=2),
-            encoding="utf-8",
-        )
-        log.info("Saved movies state to storage file.")
-
-    # Загружает состояние хранилища из JSON-файла.
-    @classmethod
-    def from_state(cls) -> "MovieStorage":
-        if not MOVIES_STORAGE_FILEPATH.exists():
-            log.info("Movies storage file does not exist.")
-            return MovieStorage()
-        return cls.model_validate_json(
-            MOVIES_STORAGE_FILEPATH.read_text(encoding="utf-8")
-        )
 
     def get(self) -> list[Movie]:
         # Получаем список фильмов from REDIS через hvals
@@ -93,24 +74,5 @@ class MovieStorage(BaseModel):
     def delete(self, movie: Movie) -> None:
         self._delete_from_redis(slug=movie.slug)
         log.info("The movies has been delete in storage.")
-
-    def init_storage_from_state(self) -> None:
-        """
-        Инициализирует хранилище из файла состояния.
-        Пытается загрузить данные из файла. В случае ошибки валидации,
-        перезаписывает файл текущим состоянием хранилища.
-        """
-        try:
-            data = MovieStorage().from_state()
-        except ValidationError:
-            self.save_state()
-            log.warning("Rewritten movies storage file due to validation error.")
-            return
-
-        self.slug_to_movie.update(
-            data.slug_to_movie,
-        )
-        log.warning("Recovered movie data from storage file.")
-
 
 storage = MovieStorage()
