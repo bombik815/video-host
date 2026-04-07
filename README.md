@@ -65,4 +65,13 @@ docker exec -it redis redis-cli -n 2 KEYS users:*
 # ===== УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ =====
 docker exec -it redis redis-cli -n 2 DEL alice
 
+
+# Добавляем первый токен в множество с ключом 'tokens'
+SADD tokens f8I7ZdAF0p_CYdVQQZ6Fqg
+
+# Добавляем второй токен в то же множество
+SADD tokens another_token_string_abc123
+
+# Теперь SMEMBERS сработает и вернет все токены из множества
+SMEMBERS tokens
 ```

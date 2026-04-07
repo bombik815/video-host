@@ -23,33 +23,6 @@ redis = Redis(
 
 
 class ShortUrlStorage(BaseModel):
-    slug_to_short_url: dict[str, ShortUrl] = {}
-
-    def save_state(self) -> None:
-        SHORT_URLS_STORAGE_FILEPATH.write_text(self.model_dump_json(indent=2))
-        log.info("Saved short url to storage file.")
-
-    @classmethod
-    def from_state(cls) -> "ShortUrlStorage":
-        if not SHORT_URLS_STORAGE_FILEPATH.exists():
-            log.info("Short url storage file does not exist.")
-            return ShortUrlStorage()
-        return cls.model_validate_json(SHORT_URLS_STORAGE_FILEPATH.read_text())
-
-    def init_storage_from_state(self) -> None:
-        try:
-            data = ShortUrlStorage().from_state()
-        except ValidationError:
-            self.save_state()
-            log.warning("Rewritten storage file due to validation error.")
-            return
-
-        # Мы обновили свойство напрямую, если будут новые свойства,
-        # то их тоже надо обновить
-        self.slug_to_short_url.update(
-            data.slug_to_short_url,
-        )
-        log.warning("Recovered data from storage file.")
 
     def save_short_url(self, short_url: ShortUrl) -> None:
         redis.hset(

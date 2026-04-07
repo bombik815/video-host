@@ -74,13 +74,6 @@ def prefetch_short_urls(slug: str) -> ShortUrl:
     )
 
 
-def save_storage_state(request: Request, background_tasks: BackgroundTasks):
-    yield
-    if request.method in UNSAFE_METHODS:
-        log.info("Add background task to save storage.")
-        background_tasks.add_task(storage.save_state)
-
-
 def validate_api_token(api_token: HTTPAuthorizationCredentials):
     # Проверяет, что предоставленный API токен содержится в наборе допустимых токенов в REDIS
     if redis_tokens.token_exist(api_token.credentials):

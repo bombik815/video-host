@@ -73,6 +73,6 @@ class MovieStorage(BaseModel):
 
     def delete(self, movie: Movie) -> None:
         self._delete_from_redis(slug=movie.slug)
-        log.info("The movies has been delete in storage.")
+
 
 storage = MovieStorage()
