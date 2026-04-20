@@ -15,6 +15,18 @@ redis = Redis(
 )
 
 
+class MovieUrlBAseError(Exception):
+    """
+    Base Exception for Movie CRUD actions
+    """
+
+
+class MovieUrlAlreadyExists(MovieUrlBAseError):
+    """
+    Raise on movie creation if such slug already exist
+    """
+
+
 # Хранилище данных о фильмах
 class MovieStorage(BaseModel):
     slug_to_movie: dict[str, Movie] = {}
@@ -31,6 +43,13 @@ class MovieStorage(BaseModel):
             return None
         return Movie.model_validate_json(movie_json)
 
+    # Метод проверка в Redis если запись существует по Slug
+    def exists(self, slug: str) -> bool:
+        return redis.hexists(
+            name=config.REDIS_MOVIES_HASH_NAME,
+            key=slug,
+        )
+
     def _save_to_redis(self, movie: Movie) -> None:
         """Сохраняет информацию о фильме в Redis."""
         redis.hset(
@@ -46,6 +65,11 @@ class MovieStorage(BaseModel):
         self._save_to_redis(movie)
         log.info("Created new movie: %s", movie.slug)
         return movie
+
+    def create_or_raise_if_exist(self, movie_create: MovieCreate) -> Movie:
+        if not self.exists(movie_create.slug):
+            return self.create(movie_create)
+        raise MovieUrlAlreadyExists(movie_create.slug)
 
     def update(
         self,

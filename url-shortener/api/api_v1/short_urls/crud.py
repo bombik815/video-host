@@ -22,6 +22,18 @@ redis = Redis(
 )
 
 
+class ShortUrlBAseError(Exception):
+    """
+    Base Exception for ShortUrl CRUD actions
+    """
+
+
+class ShortUrlAlreadyExists(ShortUrlBAseError):
+    """
+    Raise on short url creation if such slug already exist
+    """
+
+
 class ShortUrlStorage(BaseModel):
 
     def save_short_url(self, short_url: ShortUrl) -> None:
@@ -63,6 +75,13 @@ class ShortUrlStorage(BaseModel):
         ):
             return ShortUrl.model_validate_json(data)
 
+    # Метод проверка в Redis если запись существует
+    def exists(self, slug: str) -> bool:
+        return redis.hexists(
+            name=config.REDIS_SHORT_URLS_HASH_NAME,
+            key=slug,
+        )
+
     """
     Создает объект ShortUrl на основе переданных параметров.
 
@@ -79,6 +98,11 @@ class ShortUrlStorage(BaseModel):
         self.save_short_url(short_url)
         log.info("Created new short url %s.", short_url)
         return short_url
+
+    def create_or_raise_if_exist(self, short_url_create: ShortUrlCreate) -> ShortUrl:
+        if not self.exists(short_url_create.slug):
+            return self.create(short_url_create)
+        raise ShortUrlAlreadyExists(short_url_create.slug)
 
     def update(
         self,
