@@ -59,7 +59,23 @@ def read_short_urls_list() -> list[ShortUrl]:
 """
 
 
-@router.post("/", response_model=ShortUrlRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/",
+    response_model=ShortUrlRead,
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        status.HTTP_409_CONFLICT: {
+            "description": "Short URL with slug already exists.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Short URL with slug='name' already exists.",
+                    }
+                }
+            },
+        },
+    },
+)
 def create_short_url(
     short_url_create: ShortUrlCreate,
 ):
@@ -68,5 +84,5 @@ def create_short_url(
         return storage.create(short_url_create)
     raise HTTPException(
         status_code=status.HTTP_409_CONFLICT,
-        detail=f"Short URL with slug {short_url_create.slug} already exists.",
+        detail=f"Short URL with slug {short_url_create.slug!r} already exists.",
     )

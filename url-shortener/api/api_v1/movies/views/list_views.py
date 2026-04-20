@@ -34,10 +34,7 @@ router = APIRouter(
 )
 
 """
-Возвращает список фильмов
-
-Возвращает:
-    list[Movie]: список объектов фильмов
+Возвращает список фильмов  list[Movie]: список объектов фильмов
 
 """
 
@@ -47,12 +44,28 @@ def get_movies() -> list[Movie]:
     return storage.get()
 
 
-@router.post("/", response_model=Movie, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/",
+    response_model=Movie,
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        status.HTTP_409_CONFLICT: {
+            "description": "Movie with slug already exists.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Movie with slug='name' already exists.",
+                    }
+                }
+            },
+        },
+    },
+)
 def create_movie(movie_create: MovieCreate):
     # Проверим если такая запись в БД уже существует, тогда выдаем ошибку 409
     if not storage.get_by_slug(movie_create.slug):
         return storage.create(movie_create)
     raise HTTPException(
         status_code=status.HTTP_409_CONFLICT,
-        detail=f"Movie URL with slug {movie_create.slug} already exists.",
+        detail=f"Movie URL with slug {movie_create.slug!r} already exists.",
     )
