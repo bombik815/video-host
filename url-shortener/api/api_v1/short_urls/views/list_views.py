@@ -2,6 +2,7 @@ from fastapi import (
     APIRouter,
     status,
     Depends,
+    HTTPException,
 )
 
 from api.api_v1.short_urls.dependencies import (
@@ -62,4 +63,10 @@ def read_short_urls_list() -> list[ShortUrl]:
 def create_short_url(
     short_url_create: ShortUrlCreate,
 ):
-    return storage.create(short_url_create)
+    # Проверим если такая запись в БД уже существует, тогда выдаем ошибку 409
+    if not storage.get_by_slug(short_url_create.slug):
+        return storage.create(short_url_create)
+    raise HTTPException(
+        status_code=status.HTTP_409_CONFLICT,
+        detail=f"Short URL with slug {short_url_create.slug} already exists.",
+    )

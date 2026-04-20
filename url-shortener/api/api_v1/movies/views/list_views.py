@@ -2,6 +2,7 @@ from fastapi import (
     status,
     APIRouter,
     Depends,
+    HTTPException,
 )
 
 from api.api_v1.movies.crud import storage
@@ -48,4 +49,10 @@ def get_movies() -> list[Movie]:
 
 @router.post("/", response_model=Movie, status_code=status.HTTP_201_CREATED)
 def create_movie(movie_create: MovieCreate):
-    return storage.create(movie_create)
+    # Проверим если такая запись в БД уже существует, тогда выдаем ошибку 409
+    if not storage.get_by_slug(movie_create.slug):
+        return storage.create(movie_create)
+    raise HTTPException(
+        status_code=status.HTTP_409_CONFLICT,
+        detail=f"Movie URL with slug {movie_create.slug} already exists.",
+    )
