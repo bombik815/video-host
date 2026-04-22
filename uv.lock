@@ -179,6 +179,7 @@ dependencies = [
     { name = "black" },
     { name = "fastapi", extra = ["standard"] },
     { name = "redis", extra = ["hiredis"] },
+    { name = "typer" },
 ]
 
 [package.metadata]
@@ -186,6 +187,7 @@ requires-dist = [
     { name = "black", specifier = ">=26.1.0" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.116.2" },
     { name = "redis", extras = ["hiredis"], specifier = ">=7.4.0" },
+    { name = "typer", specifier = ">=0.17.4" },
 ]
 
 [[package]]
