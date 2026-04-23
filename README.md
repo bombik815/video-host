@@ -75,3 +75,8 @@ SADD tokens another_token_string_abc123
 # Теперь SMEMBERS сработает и вернет все токены из множества
 SMEMBERS tokens
 ```
+
+### Запуск команд в терминале 
+```shell
+uv run --script url-shortener/manage.py [command]
+```
