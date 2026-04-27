@@ -8,7 +8,7 @@ class RedisTokensHelper(AbstractTokensHelper):
     """
     Реализация работы с токенами через Redis.
     Хранит токены в Redis в виде множества (SET).
-    
+
     Основные методы:
     - token_exist(token): проверяет наличие токена в Redis SET через SISMEMBER
     - add_token(token): добавляет токен в Redis через SADD
@@ -31,7 +31,7 @@ class RedisTokensHelper(AbstractTokensHelper):
         self.redis.sadd(self.tokens_set, token)
 
     def get_tokens(self) -> list[str]:
-        return sorted(self.redis.smembers(self.tokens_set))
+        return list(self.redis.smembers(self.tokens_set))
 
 
 RedisTokenHelper = RedisTokensHelper
