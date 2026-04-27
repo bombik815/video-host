@@ -12,6 +12,7 @@ class RedisTokensHelper(AbstractTokensHelper):
     Основные методы:
     - token_exist(token): проверяет наличие токена в Redis SET через SISMEMBER
     - add_token(token): добавляет токен в Redis через SADD
+    - delete_token(token): удаляет токен из Redis через SREM
     - get_tokens(): возвращает список всех токенов из Redis SET
     """
 
@@ -31,7 +32,10 @@ class RedisTokensHelper(AbstractTokensHelper):
         self.redis.sadd(self.tokens_set, token)
 
     def get_tokens(self) -> list[str]:
-        return list(self.redis.smembers(self.tokens_set))
+        return sorted(self.redis.smembers(self.tokens_set))
+
+    def delete_token(self, token: str) -> None:
+        self.redis.srem(self.tokens_set, token)
 
 
 RedisTokenHelper = RedisTokensHelper

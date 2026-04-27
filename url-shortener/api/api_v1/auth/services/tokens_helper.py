@@ -6,7 +6,7 @@ class AbstractTokensHelper(ABC):
     """
     Абстрактный базовый класс для работы с токенами.
     Определяет интерфейс для проверки, добавления и генерации токенов.
-    Наследники должны реализовать методы token_exist, add_token и get_tokens.
+    Наследники должны реализовать методы token_exist, add_token, delete_token и get_tokens.
     
     Основные методы:
     - token_exist(token): проверяет наличие токена в хранилище
@@ -25,6 +25,10 @@ class AbstractTokensHelper(ABC):
 
     @abstractmethod
     def get_tokens(self) -> list[str]:
+        pass
+
+    @abstractmethod
+    def delete_token(self, token: str) -> None:
         pass
 
     @classmethod
