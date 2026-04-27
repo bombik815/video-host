@@ -100,6 +100,7 @@ dependencies = [
     { name = "black" },
     { name = "fastapi" },
     { name = "redis", extra = ["hiredis"] },
+    { name = "rich" },
     { name = "typer" },
     { name = "uvicorn" },
 ]
@@ -109,6 +110,7 @@ requires-dist = [
     { name = "black", specifier = ">=26.1.0" },
     { name = "fastapi", specifier = ">=0.116.2" },
     { name = "redis", extras = ["hiredis"], specifier = ">=7.4.0" },
+    { name = "rich", specifier = ">=14.1.0" },
     { name = "typer", specifier = ">=0.17.4" },
     { name = "uvicorn", specifier = ">=0.35.0" },
 ]
