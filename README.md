@@ -101,5 +101,8 @@ Examples:
 
 ```shell
 uv run --script url-shortener/manage.py token check my-secret-token
+uv run --script url-shortener/manage.py token create
+uv run --script url-shortener/manage.py token add my-secret-token
 uv run --script url-shortener/manage.py token list
+uv run --script url-shortener/manage.py token remove my-secret-token
 ```
