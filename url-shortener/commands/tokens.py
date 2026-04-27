@@ -3,7 +3,7 @@ from typing import Annotated
 import typer
 from rich import print
 from rich.markdown import Markdown
-from api.api_v1.auth.services import redis_tokens
+from api.api_v1.auth.services import redis_tokens as tokens
 
 app = typer.Typer(
     name="token",
@@ -27,7 +27,7 @@ def check(
         f"Token [bold]{token}[/bold]",
         (
             "[green]exists.[/green]"
-            if redis_tokens.token_exist(token)
+            if tokens.token_exist(token)
             else "[red]does not exist.[/red]"
         ),
     )
@@ -39,7 +39,7 @@ def create() -> None:
     Create new the token
     """
 
-    token = redis_tokens.generate_and_save_token()
+    token = tokens.generate_and_save_token()
     print(Markdown(f"# New API Token\n\n- `{token}`"))
 
 
@@ -54,7 +54,7 @@ def add(
     Add the new token
     """
 
-    redis_tokens.add_token(token)
+    tokens.add_token(token)
     print(f"Token [bold]{token}[/bold] [green]added.[/green]")
 
 
@@ -69,8 +69,8 @@ def remove(
     Remove the token
     """
 
-    existed = redis_tokens.token_exist(token)
-    redis_tokens.delete_token(token)
+    existed = tokens.token_exist(token)
+    tokens.delete_token(token)
     print(
         f"Token [bold]{token}[/bold]",
         "[green]removed.[/green]" if existed else "[yellow]was not found.[/yellow]",
@@ -82,11 +82,11 @@ def list_tokens() -> None:
     """
     List all tokens
     """
-    tokens = redis_tokens.get_tokens()
-    if not tokens:
+    tokens_ = tokens.get_tokens()
+    if not tokens_:
         print(Markdown("# Available API Tokens\n\n_No tokens found._"))
         return
 
     print(Markdown("# Available API Tokens"))
-    print(Markdown("\n- ".join([""] + tokens)))
+    print(Markdown("\n- ".join([""] + tokens_)))
     print()
