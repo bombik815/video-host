@@ -2,11 +2,11 @@ import secrets
 from abc import ABC, abstractmethod
 
 
-class AbstractTokenHelper(ABC):
+class AbstractTokensHelper(ABC):
     """
     Абстрактный базовый класс для работы с токенами.
     Определяет интерфейс для проверки, добавления и генерации токенов.
-    Наследники должны реализовать методы token_exist и add_token.
+    Наследники должны реализовать методы token_exist, add_token и get_tokens.
     
     Основные методы:
     - token_exist(token): проверяет наличие токена в хранилище
@@ -23,6 +23,10 @@ class AbstractTokenHelper(ABC):
     def add_token(self, token: str) -> None:
         pass
 
+    @abstractmethod
+    def get_tokens(self) -> list[str]:
+        pass
+
     @classmethod
     def generate_token(cls) -> str:
         return secrets.token_urlsafe(16)
@@ -31,3 +35,6 @@ class AbstractTokenHelper(ABC):
         token = self.generate_token()
         self.add_token(token)
         return token
+
+
+AbstractTokenHelper = AbstractTokensHelper
