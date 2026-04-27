@@ -31,6 +31,9 @@ def check(
 
 @app.command(name="list")
 def list_tokens() -> None:
+    """
+    List all tokens
+    """
     print(Markdown("# Available API Tokens"))
     print(Markdown("\n- ".join([""] + redis_tokens.get_tokens())))
     print()
