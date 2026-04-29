@@ -1,3 +1,5 @@
+from typing import cast
+
 from redis import Redis
 
 from api.api_v1.auth.services.users_helper import AbstractUsersHelper
@@ -8,7 +10,7 @@ class RedisUsersHelper(AbstractUsersHelper):
     """
     Реализация работы с пользователями через Redis.
     Хранит данные пользователей в Redis (БД №2).
-    
+
     Основные методы:
     - get_user_password(username): получает пароль пользователя из Redis через GET
     - validate_user_password(username, password): проверяет корректность пароля (унаследован)
@@ -23,7 +25,10 @@ class RedisUsersHelper(AbstractUsersHelper):
         )
 
     def get_user_password(self, username: str) -> str | None:
-        return self.redis.get(username)
+        return cast(
+            str | None,
+            self.redis.get(username),
+        )
 
 
 redis_users = RedisUsersHelper(
