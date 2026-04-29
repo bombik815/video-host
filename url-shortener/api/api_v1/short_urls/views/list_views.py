@@ -2,7 +2,6 @@ from fastapi import (
     APIRouter,
     status,
     Depends,
-    HTTPException,
 )
 
 from api.api_v1.short_urls.dependencies import (
@@ -13,7 +12,7 @@ from schemas.short_url import (
     ShortUrlCreate,
     ShortUrlRead,
 )
-from api.api_v1.short_urls.crud import storage, ShortUrlAlreadyExists
+from api.api_v1.short_urls.crud import storage
 
 router = APIRouter(
     prefix="/short-urls",
@@ -63,27 +62,6 @@ def read_short_urls_list() -> list[ShortUrl]:
     "/",
     response_model=ShortUrlRead,
     status_code=status.HTTP_201_CREATED,
-    responses={
-        status.HTTP_409_CONFLICT: {
-            "description": "Short URL with slug already exists.",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "detail": "Short URL with slug='name' already exists.",
-                    }
-                }
-            },
-        },
-    },
 )
-def create_short_url(
-    short_url_create: ShortUrlCreate,
-):
-    # Проверим если такая запись в БД уже существует, тогда выдаем ошибку 409
-    try:
-        return storage.create_or_raise_if_exist(short_url_create)
-    except ShortUrlAlreadyExists:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=f"Short URL with slug {short_url_create.slug!r} already exists.",
-        )
+def create_short_url(short_url_create: ShortUrlCreate) -> ShortUrl:
+    return storage.create(short_url_create)

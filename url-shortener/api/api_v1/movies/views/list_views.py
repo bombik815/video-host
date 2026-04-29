@@ -2,10 +2,9 @@ from fastapi import (
     status,
     APIRouter,
     Depends,
-    HTTPException,
 )
 
-from api.api_v1.movies.crud import storage, MovieUrlAlreadyExists
+from api.api_v1.movies.crud import storage
 from api.api_v1.movies.dependencies import (
     api_token_or_user_basic_auth_required_for_unsafe_methods,
 )
@@ -48,25 +47,6 @@ def get_movies() -> list[Movie]:
     "/",
     response_model=Movie,
     status_code=status.HTTP_201_CREATED,
-    responses={
-        status.HTTP_409_CONFLICT: {
-            "description": "Movie with slug already exists.",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "detail": "Movie with slug='name' already exists.",
-                    }
-                }
-            },
-        },
-    },
 )
-def create_movie(movie_create: MovieCreate):
-    # Проверим если такая запись в БД уже существует, тогда выдаем ошибку 409
-    try:
-        return storage.create_or_raise_if_exist(movie_create)
-    except MovieUrlAlreadyExists:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=f"Movie URL with slug {movie_create.slug!r} already exists.",
-        )
+def create_movie(movie_create: MovieCreate) -> Movie:
+    return storage.create(movie_create)
