@@ -12,10 +12,10 @@ redis = Redis(
 
 def main():
     print(redis.ping())
-    redis.set(name="name", value="Alex")
-    redis.set(name="foo", value="bar")
-    redis.set(name="number", value="44")
-    print(redis.get("name"))
+    redis.set("name", "Alex")
+    redis.set("foo", "bar")
+    redis.set("number", "44")
+    print("name:", redis.get("name"))
     print(
         [
             redis.get("foo"),
