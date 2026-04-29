@@ -1,4 +1,5 @@
 import logging
+from typing import cast, Iterable
 
 from pydantic import BaseModel, ValidationError
 from redis import Redis
@@ -54,7 +55,10 @@ class ShortUrlStorage(BaseModel):
         # Получение список значение ShortUrl from Redis через hvals
         return [
             ShortUrl.model_validate_json(value)
-            for value in redis.hvals(name=config.REDIS_SHORT_URLS_HASH_NAME)
+            for value in cast(
+                Iterable[str],
+                redis.hvals(name=config.REDIS_SHORT_URLS_HASH_NAME),
+            )
         ]
 
     """
@@ -73,14 +77,10 @@ class ShortUrlStorage(BaseModel):
             name=config.REDIS_SHORT_URLS_HASH_NAME,
             key=slug,
         ):
+            assert isinstance(data, str)
             return ShortUrl.model_validate_json(data)
 
-    # Метод проверка в Redis если запись существует
-    def exists(self, slug: str) -> bool:
-        return redis.hexists(
-            name=config.REDIS_SHORT_URLS_HASH_NAME,
-            key=slug,
-        )
+        return None
 
     """
     Создает объект ShortUrl на основе переданных параметров.
@@ -93,22 +93,19 @@ class ShortUrlStorage(BaseModel):
     """
 
     def create(self, short_url_create: ShortUrlCreate) -> ShortUrl:
-        short_url = ShortUrl(**short_url_create.model_dump())
+        short_url = ShortUrl(
+            **short_url_create.model_dump(),
+        )
         # Этот код сохраняет информацию о короткой ссылке в Redis
         self.save_short_url(short_url)
         log.info("Created new short url %s.", short_url)
         return short_url
 
-    def create_or_raise_if_exist(self, short_url_create: ShortUrlCreate) -> ShortUrl:
-        if not self.exists(short_url_create.slug):
-            return self.create(short_url_create)
-        raise ShortUrlAlreadyExists(short_url_create.slug)
-
     def update(
         self,
         short_url: ShortUrl,
         short_url_in: ShortUrlUpdate,
-    ):
+    ) -> ShortUrl:
 
         for field_name, value in short_url_in:
             setattr(short_url, field_name, value)

@@ -1,4 +1,6 @@
 import logging
+from typing import cast, Iterable
+
 from pydantic import BaseModel
 from redis import Redis
 
@@ -33,22 +35,22 @@ class MovieStorage(BaseModel):
 
     def get(self) -> list[Movie]:
         # Получаем список фильмов from REDIS через hvals
-        movies_json = redis.hvals(name=config.REDIS_MOVIES_HASH_NAME)
+        movies_json = cast(
+            Iterable[str],
+            redis.hvals(name=config.REDIS_MOVIES_HASH_NAME),
+        )
         return [Movie.model_validate_json(movie_json) for movie_json in movies_json]
 
     def get_by_slug(self, slug: str) -> Movie | None:
         # Получаем запись с REDIS по slug
-        movie_json = redis.hget(name=config.REDIS_MOVIES_HASH_NAME, key=slug)
-        if movie_json is None:
-            return None
-        return Movie.model_validate_json(movie_json)
-
-    # Метод проверка в Redis если запись существует по Slug
-    def exists(self, slug: str) -> bool:
-        return redis.hexists(
+        movie_json = redis.hget(
             name=config.REDIS_MOVIES_HASH_NAME,
             key=slug,
         )
+        if movie_json is None:
+            return None
+        assert isinstance(movie_json, str)
+        return Movie.model_validate_json(movie_json)
 
     def _save_to_redis(self, movie: Movie) -> None:
         """Сохраняет информацию о фильме в Redis."""
@@ -65,11 +67,6 @@ class MovieStorage(BaseModel):
         self._save_to_redis(movie)
         log.info("Created new movie: %s", movie.slug)
         return movie
-
-    def create_or_raise_if_exist(self, movie_create: MovieCreate) -> Movie:
-        if not self.exists(movie_create.slug):
-            return self.create(movie_create)
-        raise MovieUrlAlreadyExists(movie_create.slug)
 
     def update(
         self,
