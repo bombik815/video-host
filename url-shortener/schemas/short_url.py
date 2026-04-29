@@ -11,7 +11,7 @@ DescriptonString = Annotated[
 
 class ShortUrlBase(BaseModel):
     target_url: AnyHttpUrl
-    description: DescriptonString = ""
+    description: DescriptonString
 
 
 class ShortUrlCreate(ShortUrlBase):
@@ -23,12 +23,11 @@ class ShortUrlCreate(ShortUrlBase):
         str,
         Len(min_length=3, max_length=10),
     ]
+    description: DescriptonString = ""
 
 
 class ShortUrlUpdate(ShortUrlBase):
     """Модель для обновления информации о сокращенной ссылке"""
-
-    description: DescriptonString
 
 
 class ShortUrlPartialUpdate(BaseModel):
@@ -40,6 +39,7 @@ class ShortUrlRead(ShortUrlBase):
     """Модель для чтения данный по короткой ссылке"""
 
     slug: str
+    description: str
 
 
 class ShortUrl(ShortUrlBase):
