@@ -20,6 +20,7 @@ from .crud import storage
 from schemas.movie import Movie
 from api.api_v1.auth.services import (
     redis_tokens,
+    redis_users,
 )
 
 log = logging.getLogger(__name__)
@@ -94,6 +95,11 @@ def api_token_required_for_unsafe_methods(
     # Требуется токен только для опасных методов; Разрешить безопасные методы без токена
     if request.method not in UNSAFE_METHODS:
         return
+    if not api_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="API token is required",
+        )
 
     validate_api_token(api_token=api_token)
 
@@ -102,10 +108,9 @@ def validate_basic_auth(
     credentials: HTTPBasicCredentials | None,
 ):
     # Проверяем, что предоставленные учетные данные являются действительными
-    if (
-        credentials
-        and credentials.username in USERS_DB
-        and USERS_DB[credentials.username] == credentials.password
+    if credentials and redis_users.validate_user_password(
+        credentials.username,
+        credentials.password,
     ):
         return
 
