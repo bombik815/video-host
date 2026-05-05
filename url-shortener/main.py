@@ -1,13 +1,11 @@
 ﻿import logging
 
 import uvicorn
-from fastapi import FastAPI
-from fastapi import Request
-from app_lifespan import lifespan
+from fastapi import FastAPI, Request
 
 from api import router as api_router
-
 from api.redirect_views import router as redirect_views
+from app_lifespan import lifespan
 from core.config import LOG_FORMAT, LOG_LEVEL
 
 logging.basicConfig(level=LOG_LEVEL, format=LOG_FORMAT)

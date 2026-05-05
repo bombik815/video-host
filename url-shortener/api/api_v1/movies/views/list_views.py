@@ -1,14 +1,13 @@
 from fastapi import (
-    status,
     APIRouter,
     Depends,
+    status,
 )
 
 from api.api_v1.movies.crud import storage
 from api.api_v1.movies.dependencies import (
     api_token_or_user_basic_auth_required_for_unsafe_methods,
 )
-
 from schemas.movie import Movie, MovieCreate, MovieRead
 
 router = APIRouter(
