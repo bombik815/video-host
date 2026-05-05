@@ -10,15 +10,11 @@ from api import router as api_router
 from api.redirect_views import router as redirect_views
 from core.config import LOG_FORMAT, LOG_LEVEL
 
-logging.basicConfig(
-    level=LOG_LEVEL,
-    format=LOG_FORMAT
-)
+logging.basicConfig(level=LOG_LEVEL, format=LOG_FORMAT)
 app = FastAPI(
     title="URL Shortener",
     lifespan=lifespan,
     description="URL Shortener",
-
 )
 
 
@@ -30,7 +26,7 @@ app.include_router(api_router)
 async def read_root(
     request: Request,
     name: str = "Shortener",
-):
+) -> dict[str, str]:
     """
     Корневой view - возвращает JSON со ссылками на документацию
     """
@@ -50,5 +46,5 @@ async def read_root(
     }
 
 
-if __name__ == '__main__':
-    uvicorn.run(app, host='127.0.0.1', port=8080)
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8080)

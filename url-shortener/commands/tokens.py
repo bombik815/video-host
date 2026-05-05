@@ -18,7 +18,7 @@ def check(
         str,
         typer.Argument(help="the token to check"),
     ],
-):
+) -> None:
     """
     Check the  token
     """
@@ -50,7 +50,7 @@ def add(
         str,
         typer.Argument(help="the token to add"),
     ],
-):
+) -> None:
     """
     Add the new token to db
     """
@@ -65,7 +65,7 @@ def remove(
         str,
         typer.Argument(help="The token to delete"),
     ],
-):
+) -> None:
     """
     Remove the token
     """

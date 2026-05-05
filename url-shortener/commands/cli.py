@@ -1,4 +1,4 @@
-__app__ = ("app",)
+__all__ = ("app",)
 
 import typer
 
@@ -13,7 +13,7 @@ app = typer.Typer(
 
 
 @app.callback()
-def callback():
+def callback() -> None:
     """
     Some CLI management commands
     """

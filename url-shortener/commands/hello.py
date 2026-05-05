@@ -13,5 +13,5 @@ app = typer.Typer(
 @app.command(help="Greet user by [bold]name[/bold]")
 def hello(
     name: Annotated[str, typer.Argument(help="Name to greet")],
-):
+) -> None:
     print(f"[bold]Hello, [green]{name}![/green][/bold]")
