@@ -147,3 +147,8 @@ ignore = [
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
 unfixable = []
+
+[tool.ruff.lint.extend-per-file-ignores]
+"stuff.py" = [
+    "T20", # flake8-print (T20)
+]
