@@ -7,6 +7,12 @@
 Mark `url-shortener` as `Sources Root` in your IDE.
 
 ### Run
+### Configure pre-commit
+Install pre-commit hook:
+```shell
+pre-commit install
+```
+
 
 Go to the working directory:
 
