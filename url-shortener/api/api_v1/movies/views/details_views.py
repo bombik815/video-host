@@ -47,7 +47,7 @@ def get_movie(movie: MovieDep) -> Movie:
     return movie
 
 
-@router.put("/", response_model=Movie)
+@router.put("/")
 def update_movie_details(
     movie: MovieDep,
     movie_in: MovieUpdate,
@@ -66,7 +66,7 @@ def update_movie_details(
     )
 
 
-@router.patch("/", response_model=Movie)
+@router.patch("/")
 def update_movie_details_partial(
     movie: MovieDep,
     movie_in: MovieUpdatePartial,
