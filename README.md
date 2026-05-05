@@ -26,6 +26,40 @@ Or run Uvicorn directly:
 uvicorn main:app --host 127.0.0.1 --port 8080
 ```
 
+### Ruff
+
+Check the project:
+
+```shell
+ruff check .
+```
+
+Apply safe fixes:
+
+```shell
+ruff check . --fix
+```
+
+Apply unsafe fixes too:
+
+```shell
+ruff check . --fix --unsafe-fixes
+```
+
+Use `--unsafe-fixes` only when you have reviewed the proposed changes.
+
+Run the formatter check:
+
+```shell
+ruff format . --check
+```
+
+Format files:
+
+```shell
+ruff format .
+```
+
 ## Project Structure
 
 ```text
