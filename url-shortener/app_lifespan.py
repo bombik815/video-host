@@ -5,5 +5,7 @@ from fastapi import FastAPI
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+async def lifespan(
+    app: FastAPI,  # noqa: ARG001
+) -> AsyncIterator[None]:
     yield

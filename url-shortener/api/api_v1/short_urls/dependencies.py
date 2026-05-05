@@ -73,7 +73,8 @@ def prefetch_short_urls(slug: str) -> ShortUrl:
 
 
 def validate_api_token(api_token: HTTPAuthorizationCredentials) -> None:
-    # Проверяет, что предоставленный API токен содержится в наборе допустимых токенов в REDIS
+    # Проверяет, что предоставленный API-токен
+    # содержится в наборе допустимых токенов в Redis.
     if redis_tokens.token_exist(api_token.credentials):
         return
     raise HTTPException(
@@ -144,12 +145,14 @@ def api_token_or_user_basic_auth_required_for_unsafe_methods(
     ] = None,
 ) -> None:
     """
-    Проверяет, что для не безопасных HTTP методов (например, POST, PUT, DELETE)
-    предоставлен либо API токен, либо базовая авторизация (логин и пароль).
-    Если ни одно из этих условий не выполнено, вызывает исключение с кодом 401 Unauthorized.
+    Проверяет, что для небезопасных HTTP-методов
+    (например, POST, PUT, DELETE) предоставлен либо API-токен,
+    либо базовая авторизация (логин и пароль).
+    Если ни одно из этих условий не выполнено,
+    вызывает исключение с кодом 401 Unauthorized.
     """
     if request.method not in UNSAFE_METHODS:
-        return
+        return None
     # проверяем если логин и пароль используется
     if credentials:
         return validate_basic_auth(credentials=credentials)

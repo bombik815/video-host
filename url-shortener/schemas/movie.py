@@ -1,4 +1,4 @@
-import datetime
+from datetime import UTC, datetime
 from typing import Annotated
 
 from annotated_types import Len, MaxLen
@@ -24,7 +24,7 @@ class MovieCreate(MovieBase):
 
     title: Annotated[str, Len(min_length=3, max_length=100)]
     description: DescriptionString
-    year: Annotated[int, Form(min_value=1900, max_value=datetime.date.today().year)]
+    year: Annotated[int, Form(min_value=1900, max_value=datetime.now(UTC).year)]
     slug: str
 
 
@@ -54,6 +54,6 @@ class Movie(MovieBase):
     slug: str
     notes: str = ""  # Внутренние заметки
     status: str = (
-        "draft"  # Статус фильма (например, "draft", "published", "archived", "review_pending")
+        "draft"  # Статус фильма: draft, published, archived, review_pending.
     )
     view_count: int = 0  # Количество просмотров

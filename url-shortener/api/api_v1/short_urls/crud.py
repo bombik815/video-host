@@ -1,5 +1,6 @@
 import logging
-from typing import Iterable, cast
+from collections.abc import Iterable
+from typing import cast
 
 from pydantic import BaseModel
 from redis import Redis
@@ -22,13 +23,13 @@ redis = Redis(
 )
 
 
-class ShortUrlBAseError(Exception):
+class ShortUrlBaseError(Exception):
     """
     Base Exception for ShortUrl CRUD actions
     """
 
 
-class ShortUrlAlreadyExists(ShortUrlBAseError):
+class ShortUrlAlreadyExistsError(ShortUrlBaseError):
     """
     Raise on short url creation if such slug already exist
     """
@@ -45,7 +46,7 @@ class ShortUrlStorage(BaseModel):
 
     """
     Возвращает список всех сохраненных объектов ShortUrl.
-    
+
     Возвращает:
         list[ShortUrl]: список всех сохраненных объектов ShortUrl
     """
@@ -85,7 +86,8 @@ class ShortUrlStorage(BaseModel):
     Создает объект ShortUrl на основе переданных параметров.
 
     Параметры:
-        short_url_create (ShortUrlCreate): объект ShortUrlCreate, содержащий параметры для создания ShortUrl
+        short_url_create (ShortUrlCreate): объект ShortUrlCreate,
+            содержащий параметры для создания ShortUrl
 
     Возвращает:
         ShortUrl: созданный объект ShortUrl
@@ -117,10 +119,12 @@ class ShortUrlStorage(BaseModel):
         short_url_in: ShortUrlPartialUpdate,
     ) -> ShortUrl:
 
-        # Применяем частичное обновление только для полей, которые были явно переданы в запросе.
-        # model_dump(exclude_unset=True) — фича Pydantic v2: возвращает словарь ТОЛЬКО с теми полями,
-        # которые были заданы (не пропущены) в модели ShortUrlPartialUpdate.
-        # Это предотвращает перезапись отсутствующих полей значениями по умолчанию/None.
+        # Применяем частичное обновление только для полей,
+        # которые были явно переданы в запросе.
+        # model_dump(exclude_unset=True) в Pydantic v2
+        # возвращает словарь только с заданными полями.
+        # Это предотвращает перезапись отсутствующих полей
+        # значениями по умолчанию или None.
         for field_name, value in short_url_in.model_dump(exclude_unset=True).items():
             setattr(short_url, field_name, value)
         self.save_short_url(short_url)  # save to REDIS

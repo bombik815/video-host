@@ -1,5 +1,6 @@
 import logging
-from typing import Iterable, cast
+from collections.abc import Iterable
+from typing import cast
 
 from pydantic import BaseModel
 from redis import Redis
@@ -17,13 +18,13 @@ redis = Redis(
 )
 
 
-class MovieUrlBAseError(Exception):
+class MovieUrlBaseError(Exception):
     """
     Base Exception for Movie CRUD actions
     """
 
 
-class MovieUrlAlreadyExists(MovieUrlBAseError):
+class MovieUrlAlreadyExistsError(MovieUrlBaseError):
     """
     Raise on movie creation if such slug already exist
     """

@@ -13,7 +13,8 @@ class RedisUsersHelper(AbstractUsersHelper):
 
     Основные методы:
     - get_user_password(username): получает пароль пользователя из Redis через GET
-    - validate_user_password(username, password): проверяет корректность пароля (унаследован)
+    - validate_user_password(username, password):
+      проверяет корректность пароля (унаследован)
     """
 
     def __init__(self, host: str, port: int, db: int) -> None:

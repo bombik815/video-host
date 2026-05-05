@@ -10,7 +10,8 @@ class AbstractUsersHelper(ABC):
     Основные методы:
     - get_user_password(username): получает пароль пользователя из хранилища
     - check_passwords_natch(password1, password2): сравнивает два пароля
-    - validate_user_password(username, password): проверяет корректность пароля пользователя
+    - validate_user_password(username, password):
+      проверяет корректность пароля пользователя
     """
 
     @abstractmethod
@@ -19,7 +20,6 @@ class AbstractUsersHelper(ABC):
         - имя пользователя
         - return: пароль по пользователю, если найден
         """
-        pass
 
     @classmethod
     def check_passwords_natch(cls, password1: str, password2: str) -> bool:

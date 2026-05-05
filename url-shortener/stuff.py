@@ -11,18 +11,9 @@ redis = Redis(
 
 
 def main() -> None:
-    print(redis.ping())
     redis.set("name", "Alex")
     redis.set("foo", "bar")
     redis.set("number", "44")
-    print("name:", redis.get("name"))
-    print(
-        [
-            redis.get("foo"),
-            redis.get("number"),
-            redis.get("spam"),
-        ],
-    )
 
 
 if __name__ == "__main__":

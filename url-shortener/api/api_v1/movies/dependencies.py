@@ -128,7 +128,8 @@ def user_basic_auth_required_for_unsafe_methods(
     ] = None,
 ) -> None:
 
-    # Требуется авторизация только для опасных методов; Разрешить безопасные методы без аутентификации
+    # Требуется авторизация только для опасных методов.
+    # Безопасные методы разрешены без аутентификации.
     if request.method not in UNSAFE_METHODS:
         return
     validate_basic_auth(credentials=credentials)
@@ -146,12 +147,14 @@ def api_token_or_user_basic_auth_required_for_unsafe_methods(
     ] = None,
 ) -> None:
     """
-    Проверяет, что для не безопасных HTTP методов (например, POST, PUT, DELETE)
-    предоставлен либо API токен, либо базовая авторизация (логин и пароль).
-    Если ни одно из этих условий не выполнено, вызывает исключение с кодом 401 Unauthorized.
+    Проверяет, что для небезопасных HTTP-методов
+    (например, POST, PUT, DELETE) предоставлен либо API-токен,
+    либо базовая авторизация (логин и пароль).
+    Если ни одно из этих условий не выполнено,
+    вызывает исключение с кодом 401 Unauthorized.
     """
     if request.method not in UNSAFE_METHODS:
-        return
+        return None
     # проверяем если логин и пароль используется
     if credentials:
         return validate_basic_auth(credentials=credentials)
