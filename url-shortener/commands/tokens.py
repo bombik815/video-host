@@ -76,7 +76,7 @@ def remove(
 
     tokens.delete_token(token)
     console.print(
-        f"Token [bold cyan]{token}[/bold cyan] [green]removed from db.[/green]"
+        f"Token [bold cyan]{token}[/bold cyan] [green]removed from db.[/green]",
     )
 
 

@@ -25,7 +25,7 @@ router = APIRouter(
             "content": {
                 "application/json": {
                     "example": {"detail": "URL 'slug' not found"},
-                }
+                },
             },
         },
         status.HTTP_401_UNAUTHORIZED: {

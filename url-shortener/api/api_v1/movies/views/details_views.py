@@ -24,10 +24,10 @@ router = APIRouter(
             "description": "Movie not found",
             "content": {
                 "application/json": {
-                    "example": {"detail": "Movie with slug <slug> not found"}
-                }
+                    "example": {"detail": "Movie with slug <slug> not found"},
+                },
             },
-        }
+        },
     },
 )
 
