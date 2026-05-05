@@ -29,3 +29,6 @@ warn_unused_configs = true
 check_untyped_defs = true
 ignore_missing_imports = true
 strict = true
+plugins = [
+    "pydantic.mypy",
+]
