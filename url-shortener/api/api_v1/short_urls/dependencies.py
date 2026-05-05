@@ -3,7 +3,6 @@ from typing import Annotated
 
 from fastapi import (
     HTTPException,
-    BackgroundTasks,
     Request,
     status,
     Depends,
@@ -15,7 +14,6 @@ from fastapi.security import (
     HTTPBasicCredentials,
 )
 
-from core.config import USERS_DB
 from schemas.short_url import ShortUrl
 
 from api.api_v1.auth.services import (
@@ -74,7 +72,7 @@ def prefetch_short_urls(slug: str) -> ShortUrl:
     )
 
 
-def validate_api_token(api_token: HTTPAuthorizationCredentials):
+def validate_api_token(api_token: HTTPAuthorizationCredentials) -> None:
     # Проверяет, что предоставленный API токен содержится в наборе допустимых токенов в REDIS
     if redis_tokens.token_exist(api_token.credentials):
         return
@@ -90,7 +88,7 @@ def api_token_required_for_unsafe_methods(
         HTTPAuthorizationCredentials | None,
         Depends(static_api_token),
     ] = None,
-):
+) -> None:
 
     log.info("API token: %s", api_token)
     # Require token only for unsafe methods; allow safe methods without token
@@ -108,7 +106,7 @@ def api_token_required_for_unsafe_methods(
 
 def validate_basic_auth(
     credentials: HTTPBasicCredentials | None,
-):
+) -> None:
     # Проверяем, что предоставленные учетные данные являются действительными в REDIS БД
     if credentials and redis_users.validate_user_password(
         username=credentials.username,
@@ -128,7 +126,7 @@ def user_basic_auth_required_for_unsafe_methods(
         HTTPBasicCredentials | None,
         Depends(user_basic_auth),
     ] = None,
-):
+) -> None:
     if request.method not in UNSAFE_METHODS:
         return
     validate_basic_auth(credentials=credentials)
@@ -144,7 +142,7 @@ def api_token_or_user_basic_auth_required_for_unsafe_methods(
         HTTPBasicCredentials | None,
         Depends(user_basic_auth),
     ] = None,
-):
+) -> None:
     """
     Проверяет, что для не безопасных HTTP методов (например, POST, PUT, DELETE)
     предоставлен либо API токен, либо базовая авторизация (логин и пароль).

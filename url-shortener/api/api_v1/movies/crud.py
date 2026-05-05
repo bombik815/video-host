@@ -61,28 +61,20 @@ class MovieStorage(BaseModel):
         )
 
     def create(self, movie_create: MovieCreate) -> Movie:
-        movie = Movie(
-            **movie_create.model_dump(),
-        )
+        movie = Movie(**movie_create.model_dump())
         self._save_to_redis(movie)
         log.info("Created new movie: %s", movie.slug)
         return movie
 
-    def update(
-        self,
-        movie: Movie,
-        movie_in: MovieUpdate,
-    ):
+    def update(self, movie: Movie, movie_in: MovieUpdate) -> Movie:
+
         for field_name, value in movie_in:
             setattr(movie, field_name, value)
         self._save_to_redis(movie)
         return movie
 
-    def update_partial(
-        self,
-        movie: Movie,
-        movie_in: MovieUpdatePartial,
-    ):
+    def update_partial(self, movie: Movie, movie_in: MovieUpdatePartial) -> Movie:
+
         for field_name, value in movie_in.model_dump(exclude_unset=True).items():
             setattr(movie, field_name, value)
         self._save_to_redis(movie)

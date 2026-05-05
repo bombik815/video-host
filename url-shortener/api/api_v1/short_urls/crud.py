@@ -116,7 +116,7 @@ class ShortUrlStorage(BaseModel):
         self,
         short_url: ShortUrl,
         short_url_in: ShortUrlPartialUpdate,
-    ):
+    ) -> ShortUrl:
 
         # Применяем частичное обновление только для полей, которые были явно переданы в запросе.
         # model_dump(exclude_unset=True) — фича Pydantic v2: возвращает словарь ТОЛЬКО с теми полями,

@@ -75,7 +75,7 @@ def get_movie_by_slug(movie_slug: str) -> Movie:
 
 def validate_api_token(
     api_token: HTTPAuthorizationCredentials,
-):
+) -> None:
     # Проверяет наличие API токена в Redis хранилище
     if redis_tokens.token_exist(api_token.credentials):
         return
@@ -91,7 +91,7 @@ def api_token_required_for_unsafe_methods(
         HTTPAuthorizationCredentials | None,
         Depends(static_api_token),
     ] = None,
-):
+) -> None:
     # Требуется токен только для опасных методов; Разрешить безопасные методы без токена
     if request.method not in UNSAFE_METHODS:
         return
@@ -106,7 +106,7 @@ def api_token_required_for_unsafe_methods(
 
 def validate_basic_auth(
     credentials: HTTPBasicCredentials | None,
-):
+) -> None:
     # Проверяем, что предоставленные учетные данные являются действительными
     if credentials and redis_users.validate_user_password(
         credentials.username,
@@ -127,7 +127,7 @@ def user_basic_auth_required_for_unsafe_methods(
         HTTPBasicCredentials | None,
         Depends(user_basic_auth),
     ] = None,
-):
+) -> None:
 
     # Требуется авторизация только для опасных методов; Разрешить безопасные методы без аутентификации
     if request.method not in UNSAFE_METHODS:
@@ -145,7 +145,7 @@ def api_token_or_user_basic_auth_required_for_unsafe_methods(
         HTTPBasicCredentials | None,
         Depends(user_basic_auth),
     ] = None,
-):
+) -> None:
     """
     Проверяет, что для не безопасных HTTP методов (например, POST, PUT, DELETE)
     предоставлен либо API токен, либо базовая авторизация (логин и пароль).

@@ -51,7 +51,7 @@ def get_movie(movie: MovieDep) -> Movie:
 def update_movie_details(
     movie: MovieDep,
     movie_in: MovieUpdate,
-):
+) -> Movie:
     """
     Обновить информацию о фильме по его slug.
 
