@@ -1,4 +1,5 @@
 import logging
+from os import getenv
 from pathlib import Path
 
 # D:\_projects\video-host\url-shortener\  - это  BASE_DIR
@@ -24,7 +25,7 @@ USERS_DB: dict[str, str] = {
 
 # Redis configuration for token storage
 REDIS_HOST = "localhost"
-REDIS_PORT = 6379
+REDIS_PORT = int(getenv("REDIS_PORT", "6379"))
 REDIS_DB = 0
 REDIS_DB_TOKENS = 1
 REDIS_DB_USERS = 2
