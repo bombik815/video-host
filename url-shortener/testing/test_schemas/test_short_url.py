@@ -15,3 +15,24 @@ class ShortUrlCreateTestCase(TestCase):
         self.assertEqual(short_url_in.slug, short_url.slug)
         self.assertEqual(short_url_in.target_url, short_url.target_url)
         self.assertEqual(short_url_in.description, short_url.description)
+
+    def test_short_url_create_accepts_different_urls(self) -> None:
+        urls = [
+            "http://example.com",
+            "https://example.com",
+            # "rtmp://video.example.com",
+            # "rtmps://video.example.com",
+            "http://abc.example.com",
+            "https://www.example.com",
+        ]
+        for url in urls:
+            with self.subTest(url=url, msg=f"test-url-{url}"):
+                short_urls_create = ShortUrlCreate(
+                    slug="some-slug",
+                    description="some-description",
+                    target_url=url,
+                )
+                self.assertEqual(
+                    url.rstrip("/"),
+                    short_urls_create.model_dump(mode="json")["target_url"].rstrip("/"),
+                )
