@@ -1,5 +1,7 @@
 from unittest import TestCase
 
+from pydantic import ValidationError
+
 from schemas.movie import Movie, MovieCreate, MovieUpdate, MovieUpdatePartial
 
 
@@ -77,6 +79,26 @@ class MovieCreateTestCase(TestCase):
 
                 self.assertEqual(description, movie.description)
                 self.assertLessEqual(len(movie.description), 200)
+
+    def test_movie_create_raises_validation_error_for_too_short_slug(self) -> None:
+        # Проверяем, что слишком короткий slug отклоняется на уровне схемы.
+        with self.assertRaisesRegex(
+            ValidationError,
+            "String should have at least 3 characters",
+        ) as exc_info:
+            MovieCreate(
+                title="Avatar",
+                slug="ab",
+                description="Epic science fiction film.",
+                year=2009,
+            )
+
+        # Проверяем, что ошибка ссылается на переданное значение
+        # и тип ограничения длины.
+        error = exc_info.exception.errors()[0]
+        self.assertEqual(("slug",), error["loc"])
+        self.assertEqual("ab", error["input"])
+        self.assertEqual("string_too_short", error["type"])
 
 
 class MovieUpdateTestCase(TestCase):

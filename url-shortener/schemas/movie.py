@@ -25,7 +25,7 @@ class MovieCreate(MovieBase):
     title: Annotated[str, Len(min_length=3, max_length=100)]
     description: DescriptionString
     year: Annotated[int, Form(min_value=1900, max_value=datetime.now(UTC).year)]
-    slug: str
+    slug: Annotated[str, Len(min_length=3)]
 
 
 class MovieUpdate(MovieBase):
@@ -53,7 +53,5 @@ class Movie(MovieBase):
 
     slug: str
     notes: str = ""  # Внутренние заметки
-    status: str = (
-        "draft"  # Статус фильма: draft, published, archived, review_pending.
-    )
+    status: str = "draft"  # Статус фильма: draft, published, archived, review_pending.
     view_count: int = 0  # Количество просмотров
