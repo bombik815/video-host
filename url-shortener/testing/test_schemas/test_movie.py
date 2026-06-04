@@ -17,6 +17,66 @@ class MovieCreateTestCase(TestCase):
         self.assertEqual(movie_in.slug, movie.slug)
         self.assertEqual(movie_in.description, movie.description)
         self.assertEqual(movie_in.year, movie.year)
+        self.assertEqual("", movie.notes)
+        self.assertEqual("draft", movie.status)
+        self.assertEqual(0, movie.view_count)
+
+    def test_movie_create_accepts_different_payloads(self) -> None:
+        # Проверяем создание фильма из нескольких валидных наборов данных.
+        cases = [
+            {
+                "title": "The Matrix",
+                "slug": "the-matrix",
+                "description": "",
+                "year": 1999,
+            },
+            {
+                "title": "Arrival",
+                "slug": "arrival-2016",
+                "description": "First contact drama with nonlinear storytelling.",
+                "year": 2016,
+            },
+            {
+                "title": "Blade Runner 2049",
+                "slug": "blade-runner-2049",
+                "description": "d" * 200,
+                "year": 2017,
+            },
+        ]
+
+        for payload in cases:
+            with self.subTest(slug=payload["slug"], year=payload["year"]):
+                movie_in = MovieCreate(**payload)
+                movie = Movie(**movie_in.model_dump())
+
+                self.assertEqual(payload["title"], movie.title)
+                self.assertEqual(payload["slug"], movie.slug)
+                self.assertEqual(payload["description"], movie.description)
+                self.assertEqual(payload["year"], movie.year)
+                self.assertEqual("", movie.notes)
+                self.assertEqual("draft", movie.status)
+                self.assertEqual(0, movie.view_count)
+
+    def test_movie_description_is_preserved_for_valid_lengths(self) -> None:
+        # Проверяем, что допустимая длина описания сохраняется без изменений.
+        descriptions = [
+            "",
+            "Short description",
+            "x" * 200,
+        ]
+
+        for description in descriptions:
+            with self.subTest(description_length=len(description)):
+                movie_in = MovieCreate(
+                    title="Interstellar",
+                    slug=f"interstellar-{len(description)}",
+                    description=description,
+                    year=2014,
+                )
+                movie = Movie(**movie_in.model_dump())
+
+                self.assertEqual(description, movie.description)
+                self.assertLessEqual(len(movie.description), 200)
 
 
 class MovieUpdateTestCase(TestCase):
