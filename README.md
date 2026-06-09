@@ -146,3 +146,15 @@ uv run --script url-shortener/manage.py token add my-secret-token
 uv run --script url-shortener/manage.py token list
 uv run --script url-shortener/manage.py token remove my-secret-token
 ```
+#### 🌍 Управление переменными окружения в Windows
+
+| Оболочка | Установить (текущая сессия) | Установить постоянно (User) | Установить постоянно (System) | Просмотреть все | Удалить |
+|:---|:---|:---|:---|:---|:---|
+| **CMD** | `set VAR=val` | `setx VAR "val"` | `setx VAR "val" /M` | `set` | `set VAR=` |
+| **PowerShell** | `$env:VAR="val"` | `[Environment]::SetEnvironmentVariable("VAR","val","User")` | `[Environment]::SetEnvironmentVariable("VAR","val","Machine")` | `Get-ChildItem Env:` | `[Environment]::SetEnvironmentVariable("VAR",$null,"User")` |
+| **Git Bash / WSL** | `export VAR="val"` | `echo 'export VAR="val"' >> ~/.bashrc` | `sudo sh -c 'echo "VAR=val" >> /etc/environment'` | `env` | `unset VAR` |
+
+> **⚠️ Важные примечания:**
+> - **CMD (`setx`)**: Обрезает значения длиннее 1024 символов. Требует перезапуска терминала для применения.
+> - **PowerShell**: Для установки системных переменных (`Machine`) требуются права администратора.
+> - **Bash**: После изменения `~/.bashrc` выполните `source ~/.bashrc` или перезапустите терминал.
