@@ -1,3 +1,4 @@
+from typing import ClassVar
 from unittest import TestCase
 
 from api.api_v1.short_urls.crud import storage
@@ -12,23 +13,24 @@ from testing import ensure_testing_environment
 ensure_testing_environment()
 
 
+def create_short_url() -> ShortUrl:
+    """Создаёт и возвращает короткую ссылку для тестов."""
+    short_url_in = ShortUrlCreate(
+        slug="foo",
+        description="a foo description",
+        target_url="https://example.com",
+    )
+    return storage.create(short_url_in)
+
+
 class ShortUrlStorageUpdateTestCase(TestCase):
     def setUp(self) -> None:
         """Создаёт тестовую короткую ссылку перед каждым тестом."""
-        self.short_url = self.create_short_url()
+        self.short_url = create_short_url()
 
     def tearDown(self) -> None:
         """Удаляет тестовую короткую ссылку после каждого теста."""
         storage.delete(self.short_url)
-
-    def create_short_url(self) -> ShortUrl:
-        """Создаёт и возвращает короткую ссылку для тестов."""
-        short_url_in = ShortUrlCreate(
-            slug="foo",
-            description="a foo description",
-            target_url="https://example.com",
-        )
-        return storage.create(short_url_in)
 
     def test_update(self) -> None:
         """Проверяет полное обновление короткой ссылки."""
@@ -67,3 +69,34 @@ class ShortUrlStorageUpdateTestCase(TestCase):
             short_url_partial_update.description,
             updated_short_url.description,
         )
+
+
+class ShortUrlStorageGetShortUrlsTestCase(TestCase):
+
+    SHORT_URLS_COUNT = 3
+    short_urls: ClassVar[list[ShortUrl]] = []
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.short_urls = [create_short_url() for _ in range(cls.SHORT_URLS_COUNT)]
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        for short_url in cls.short_urls:
+            storage.delete(short_url)
+
+    def test_get_list(self) -> None:
+        short_urls = storage.get()
+        expected_slugs = {su.slug for su in self.short_urls}
+        slugs = {su.slug for su in short_urls}
+
+        self.assertEqual(expected_slugs, slugs)
+
+    def test_get_by_slug(self) -> None:
+        for short_url in self.short_urls:
+            with self.subTest(
+                slug=short_url.slug,
+                msg=f"Validate can slug {short_url.slug!r}",
+            ):
+                db_short_url = storage.get_by_slug(short_url.slug)
+                self.assertEqual(short_url, db_short_url)
