@@ -16,11 +16,7 @@ class RedisTokensHelperTestCase(TestCase):
         """Проверяет, что сгенерированный токен сохраняется и существует в системе."""
 
         new_token = redis_tokens.generate_and_save_token()
-        expected_exist = True
-        self.assertTrue(
-            expected_exist,
-            redis_tokens.token_exist(new_token),
-        )
+        self.assertTrue(redis_tokens.token_exist(new_token))
 
     def test_generated_token_is_not_empty(self) -> None:
         """Проверяет, что сгенерированный токен не является пустой строкой."""
