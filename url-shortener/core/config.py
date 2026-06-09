@@ -13,11 +13,6 @@ LOG_FORMAT: str = (
     "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s"
 )
 
-USERS_DB: dict[str, str] = {
-    # username: password
-    "sam": "password",
-    "bob": "qwerty",
-}
 
 # "f8I7ZdAF0p_CYdVQQZ6Fqg"
 # "gbFNjMk7ryhf0Ia2pVGwXQ"
@@ -25,6 +20,7 @@ USERS_DB: dict[str, str] = {
 
 # Redis configuration for token storage
 REDIS_HOST = "localhost"
+# REDIS_PORT = int(getenv("REDIS_PORT", 0)) or 6379
 REDIS_PORT = int(getenv("REDIS_PORT", "6379"))
 REDIS_DB = 0
 REDIS_DB_TOKENS = 1
