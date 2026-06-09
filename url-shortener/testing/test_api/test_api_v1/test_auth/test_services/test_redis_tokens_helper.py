@@ -17,7 +17,7 @@ class RedisTokensHelperTestCase(TestCase):
 
         new_token = redis_tokens.generate_and_save_token()
         expected_exist = True
-        self.assertEqual(
+        self.assertTrue(
             expected_exist,
             redis_tokens.token_exist(new_token),
         )
@@ -25,7 +25,10 @@ class RedisTokensHelperTestCase(TestCase):
     def test_generated_token_is_not_empty(self) -> None:
         """Проверяет, что сгенерированный токен не является пустой строкой."""
         new_token = redis_tokens.generate_and_save_token()
-        self.assertTrue(len(new_token) > 0, "Токен не должен быть пустым")
+        self.assertTrue(
+            len(new_token) > 0,
+            "Токен не должен быть пустым",
+        )
 
     def test_generated_tokens_are_unique(self) -> None:
         """Проверяет, что каждый вызов генерирует уникальный токен."""
