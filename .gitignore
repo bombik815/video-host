@@ -164,7 +164,7 @@ __marimo__/
 .idea
 .qodo
 .kilocode
-.kilo 
+.kilo
 .roo
 .qwen
 /QWEN.md
@@ -173,3 +173,4 @@ short-urls.json
 /CLAUDE.md
 /AGENTS.md
 /requirements.txt
+/url-shortener/codecove/
