@@ -158,3 +158,37 @@ uv run --script url-shortener/manage.py token remove my-secret-token
 > - **CMD (`setx`)**: Обрезает значения длиннее 1024 символов. Требует перезапуска терминала для применения.
 > - **PowerShell**: Для установки системных переменных (`Machine`) требуются права администратора.
 > - **Bash**: После изменения `~/.bashrc` выполните `source ~/.bashrc` или перезапустите терминал.
+
+## Testing & Coverage
+
+Run tests with coverage:
+
+```shell
+$env:TESTING=1; $env:REDIS_PORT=6380; python -m coverage run -m unittest
+```
+
+> Redis тестового контейнера `redis-short-urls-tests` слушает на порту **6380** (маппинг 6380→6379).
+
+Coverage report:
+
+```shell
+python -m coverage report
+```
+
+Detailed report (with missing lines):
+
+```shell
+python -m coverage report --show-missing
+```
+
+HTML report:
+
+```shell
+python -m coverage html
+```
+
+Safe run (with branch coverage):
+
+```shell
+$env:TESTING=1; $env:REDIS_PORT=6380; python -m coverage run --branch -m unittest
+```
